@@ -2,18 +2,116 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "./generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  notes   Note[]
+  recipes Recipe[]
+  votes   Vote[]
+
+  @@map("users")
 }
 
 model Note {
   id        String   @id @default(uuid())
+  ownerId   String
   title     String
   createdAt DateTime @default(now())
 
+  // Relations
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
   @@map("notes")
+}
+
+model Category {
+  id       String   @id @default(cuid())
+  category String   @unique
+  createdAt DateTime @default(now())
+
+  // Relations
+  recipes Recipe[]
+
+  @@map("categories")
+}
+
+model Recipe {
+  id          String      @id @default(uuid())
+  ownerId     String
+  title       String
+  content     String
+  description String?
+  categoryId  String
+  visibility  RecipeVisibility @default(PRIVATE)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  publishedAt DateTime?
+
+  // Relations
+  owner    User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  category Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  votes    Vote[]
+  tags     RecipeTag[]
+
+  @@index([ownerId, updatedAt])
+  @@index([visibility, createdAt])
+  @@map("recipes")
+}
+
+model Tag {
+  id        String      @id @default(cuid())
+  name      String      @unique
+  createdAt DateTime    @default(now())
+
+  // Relations
+  recipes RecipeTag[]
+
+  @@map("tags")
+}
+
+model RecipeTag {
+  id       String @id @default(uuid())
+  recipeId String
+  tagId    String
+
+  // Relations
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([recipeId, tagId])
+  @@map("recipe_tags")
+}
+
+model Vote {
+  id       String   @id @default(uuid())
+  userId   String
+  recipeId String
+  value    Int      @default(1)
+  createdAt DateTime @default(now())
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, recipeId])
+  @@index([recipeId])
+  @@index([userId])
+  @@map("votes")
+}
+
+enum RecipeVisibility {
+  PRIVATE
+  PUBLIC
 }

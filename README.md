@@ -137,11 +137,20 @@ npm start                # Запуск продакшен сервера
 
 ## 🔧 Технологии
 
-- **Next.js 14** - React фреймворк с App Router
+- **Next.js 16** - React фреймворк с App Router
 - **TypeScript** - типизация
-- **Prisma** - ORM для работы с БД
+- **Prisma 7** - ORM для работы с БД (с driver adapters)
 - **NeonDB** - бессерверный PostgreSQL
 - **Vercel** - платформа для деплоя
+
+## ⚠️ Важные изменения (Prisma 7)
+
+Проект использует **Prisma 7.3.0** с breaking changes:
+
+- **Driver Adapters**: Требуется `@prisma/adapter-pg` для PostgreSQL
+- **ESM Support**: Проект использует ES modules (`"type": "module"`)
+- **Prisma Config**: Конфигурация БД в `prisma.config.ts` вместо `schema.prisma`
+- **Generated Client**: Клиент генерируется в `prisma/generated/prisma/client`
 
 ## 📄 Лицензия
 
