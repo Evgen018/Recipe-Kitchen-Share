@@ -2,8 +2,21 @@ import { PrismaClient } from '../prisma/generated/prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
 
+/**
+ * Заменяет sslmode=prefer|require|verify-ca на verify-full, чтобы убрать
+ * предупреждение pg-connection-string: "The SSL modes 'prefer', 'require',
+ * and 'verify-ca' are treated as aliases for 'verify-full'".
+ */
+export function normalizeSslMode(url: string): string {
+  return url.replace(
+    /([?&])sslmode=(?:prefer|require|verify-ca)(?=&|$)/i,
+    '$1sslmode=verify-full'
+  )
+}
+
 export function createPrismaClient(connectionString: string): PrismaClient {
-  const pool = new Pool({ connectionString })
+  const url = normalizeSslMode(connectionString)
+  const pool = new Pool({ connectionString: url })
   const adapter = new PrismaPg(pool)
   return new PrismaClient({ adapter })
 }

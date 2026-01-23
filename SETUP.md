@@ -24,10 +24,10 @@ New-Item -Path .env -ItemType File
 Добавьте в файл `.env`:
 
 ```
-DATABASE_URL="postgresql://user:password@host/database?sslmode=require"
+DATABASE_URL="postgresql://user:password@host/database?sslmode=verify-full"
 ```
 
-Замените на вашу реальную строку подключения из Neon.
+Замените на вашу реальную строку подключения из Neon. Если в ней указано `sslmode=require` или `prefer`, приложение автоматически заменит это на `verify-full`.
 
 ## Шаг 4: Применение схемы базы данных
 

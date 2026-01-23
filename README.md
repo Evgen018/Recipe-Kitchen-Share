@@ -24,8 +24,10 @@ Copy-Item .env.example .env
 4. Откройте `.env` и вставьте вашу строку подключения:
 
 ```
-DATABASE_URL="postgresql://user:password@host/database?sslmode=require"
+DATABASE_URL="postgresql://user:password@host/database?sslmode=verify-full"
 ```
+
+> **Примечание:** Лучше использовать `sslmode=verify-full`. Значения `prefer`, `require` и `verify-ca` в коде автоматически приводятся к `verify-full`, чтобы убрать предупреждение pg о режимах SSL.
 
 ### 3. Настройка Prisma
 

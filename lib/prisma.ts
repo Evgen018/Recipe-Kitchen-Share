@@ -1,8 +1,9 @@
 import { PrismaClient } from '../prisma/generated/prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
+import { normalizeSslMode } from './db-connection'
 
-const connectionString = process.env.DATABASE_URL!
+const connectionString = normalizeSslMode(process.env.DATABASE_URL!)
 
 const pool = new Pool({ connectionString })
 const adapter = new PrismaPg(pool)
