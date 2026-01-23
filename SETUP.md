@@ -29,6 +29,17 @@ DATABASE_URL="postgresql://user:password@host/database?sslmode=verify-full"
 
 Замените на вашу реальную строку подключения из Neon. Если в ней указано `sslmode=require` или `prefer`, приложение автоматически заменит это на `verify-full`.
 
+Добавьте переменные для Auth.js и Google OAuth:
+
+```
+GOOGLE_CLIENT_ID="ваш-id.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET="ваш-секрет"
+AUTH_SECRET="случайная-строка-32-символа"
+```
+
+- **GOOGLE_CLIENT_ID** и **GOOGLE_CLIENT_SECRET**: [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials → Create OAuth 2.0 Client ID (тип: Web application, Authorized redirect URI: `http://localhost:3000/api/auth/callback/google`).
+- **AUTH_SECRET**: сгенерируйте: `openssl rand -base64 32` (или любой случайный длинный ключ).
+
 ## Шаг 4: Применение схемы базы данных
 
 ```powershell
@@ -66,8 +77,8 @@ npm run dev
 1. Закоммитьте код в Git
 2. Загрузите на GitHub
 3. Импортируйте проект в [Vercel](https://vercel.com)
-4. Добавьте переменную окружения `DATABASE_URL` в настройках проекта Vercel
-5. Деплой произойдет автоматически
+4. Добавьте переменные окружения в Vercel: `DATABASE_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `AUTH_SECRET`. В Google Cloud Console укажите redirect URI: `https://ваш-домен.vercel.app/api/auth/callback/google`
+5. Деплой произойдёт автоматически
 
 После деплоя выполните миграции:
 

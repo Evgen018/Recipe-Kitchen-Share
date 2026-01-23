@@ -536,10 +536,6 @@ export type EnumRecipeVisibilityFieldUpdateOperationsInput = {
   set?: $Enums.RecipeVisibility
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type RecipeCreateNestedOneWithoutTagsInput = {
   create?: Prisma.XOR<Prisma.RecipeCreateWithoutTagsInput, Prisma.RecipeUncheckedCreateWithoutTagsInput>
   connectOrCreate?: Prisma.RecipeCreateOrConnectWithoutTagsInput
