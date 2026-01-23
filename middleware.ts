@@ -8,7 +8,7 @@ export default auth((req) => {
     path.startsWith('/dashboard') || path.startsWith('/my-prompts')
 
   if (isProtected && !isAuth) {
-    const login = new URL('/login', req.url)
+    const login = new URL('/', req.url)
     login.searchParams.set('callbackUrl', path)
     return NextResponse.redirect(login)
   }

@@ -34,67 +34,50 @@ export async function Header() {
         >
           Recipe-Kitchen-Share
         </Link>
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          {session?.user ? (
-            <>
-              <span
-                style={{
-                  fontSize: '0.9rem',
-                  color: '#555',
-                }}
-                title={session.user.email ?? ''}
-              >
-                {session.user.name || session.user.email}
-              </span>
-              <Link
-                href="/dashboard"
-                style={{
-                  fontSize: '0.9rem',
-                  color: '#667eea',
-                  textDecoration: 'none',
-                }}
-              >
-                Кабинет
-              </Link>
-              <form
-                action={async () => {
-                  'use server'
-                  await signOut({ redirectTo: '/' })
-                }}
-              >
-                <button
-                  type="submit"
-                  style={{
-                    padding: '0.4rem 0.9rem',
-                    fontSize: '0.9rem',
-                    background: '#ef4444',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Выход
-                </button>
-              </form>
-            </>
-          ) : (
-            <Link
-              href="/login"
+        {session?.user && (
+          <nav style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <span
               style={{
-                padding: '0.5rem 1rem',
                 fontSize: '0.9rem',
-                fontWeight: 600,
-                background: '#667eea',
-                color: 'white',
+                color: '#555',
+              }}
+              title={session.user.email ?? ''}
+            >
+              {session.user.name || session.user.email}
+            </span>
+            <Link
+              href="/dashboard"
+              style={{
+                fontSize: '0.9rem',
+                color: '#667eea',
                 textDecoration: 'none',
-                borderRadius: '6px',
               }}
             >
-              Войти через Google
+              Кабинет
             </Link>
-          )}
-        </nav>
+            <form
+              action={async () => {
+                'use server'
+                await signOut({ redirectTo: '/' })
+              }}
+            >
+              <button
+                type="submit"
+                style={{
+                  padding: '0.4rem 0.9rem',
+                  fontSize: '0.9rem',
+                  background: '#ef4444',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                }}
+              >
+                Выход
+              </button>
+            </form>
+          </nav>
+        )}
       </div>
     </header>
   )
