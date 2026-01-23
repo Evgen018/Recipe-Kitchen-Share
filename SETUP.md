@@ -74,17 +74,14 @@ npm run dev
 
 ## 🚢 Деплой на Vercel
 
-Подробный чеклист по шагам **Local → GitHub → Neon → Vercel** и типичные ошибки — в **[DEPLOY.md](./DEPLOY.md)**.
+1. Закоммитьте код в Git
+2. Загрузите на GitHub
+3. Импортируйте проект в [Vercel](https://vercel.com)
+4. Добавьте переменные окружения в Vercel: `DATABASE_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `AUTH_SECRET`. В Google Cloud Console укажите redirect URI: `https://ваш-домен.vercel.app/api/auth/callback/google`
+5. Деплой произойдёт автоматически
 
-Кратко:
+После деплоя выполните миграции:
 
-1. Закоммитьте код в Git (в т.ч. папку `prisma/migrations`; она не должна быть в `.gitignore`).
-2. Загрузите на GitHub.
-3. **Neon:** примените миграции к продакшен-БД:  
-   `npx prisma migrate deploy` (с `DATABASE_URL` от Neon).
-4. Импортируйте проект в [Vercel](https://vercel.com).
-5. В Vercel добавьте переменные: `DATABASE_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `AUTH_SECRET`.
-6. В Google Cloud Console укажите redirect URI:  
-   `https://ваш-домен.vercel.app/api/auth/callback/google`
-7. После первого деплоя при необходимости снова выполните:  
-   `npx prisma migrate deploy` с продакшен-`DATABASE_URL`.
+```powershell
+npx prisma migrate deploy
+```
