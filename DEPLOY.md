@@ -19,8 +19,8 @@
   В `.gitignore` есть `.env` и `.env*.local` — секреты не попадут в репозиторий.
 
 - [ ] **Схема и конфиг Prisma**  
-  - `prisma/schema.prisma` — `datasource` с `url = env("DATABASE_URL")`
-  - `prisma.config.ts` — при необходимости (например, для `uselibpqcompat`)
+  - `prisma/schema.prisma` — `datasource` только с `provider` (в Prisma 7+ `url` не допускается в schema)
+  - `prisma.config.ts` — `datasource.url` с `env('DATABASE_URL')` (и при необходимости `uselibpqcompat`)
 
 - [ ] **proxy.ts, не middleware**  
   В корне — `proxy.ts` (с `export default` или `export function proxy`). Файла `middleware.ts` быть не должно.

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams, useParams } from 'next/navigation'
 
 interface TableData {
@@ -14,7 +14,7 @@ interface Pagination {
   totalPages: number
 }
 
-export default function TableViewPage() {
+function TableViewContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const params = useParams()
@@ -510,5 +510,19 @@ export default function TableViewPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function TableViewPage() {
+  return (
+    <Suspense
+      fallback={
+        <div style={{ maxWidth: '1200px', margin: '2rem auto', padding: '2rem', textAlign: 'center' }}>
+          <p>Загрузка данных...</p>
+        </div>
+      }
+    >
+      <TableViewContent />
+    </Suspense>
   )
 }
