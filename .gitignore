@@ -36,5 +36,5 @@ yarn-error.log*
 next-env.d.ts
 
 # prisma
-/prisma/migrations
-/generated
+# /prisma/migrations — НЕ игнорировать: нужны для `prisma migrate deploy` на Vercel/Neon
+/prisma/generated
