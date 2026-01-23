@@ -143,6 +143,24 @@ export default async function Home({
             Войти через Google
           </button>
         </form>
+        <p
+          style={{
+            marginTop: '1.25rem',
+            fontSize: '0.8rem',
+            color: '#666',
+            textAlign: 'center',
+            lineHeight: 1.4,
+          }}
+        >
+          Продолжая, вы соглашаетесь с{' '}
+          <a href="/terms" style={{ color: '#666', textDecoration: 'underline' }}>
+            Условиями использования
+          </a>{' '}
+          и{' '}
+          <a href="/privacy" style={{ color: '#666', textDecoration: 'underline' }}>
+            Политикой конфиденциальности
+          </a>
+        </p>
       </div>
     </main>
   )
