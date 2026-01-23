@@ -3,9 +3,10 @@ import { createPrismaClient } from '@/lib/db-connection'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { table: string } }
+  { params }: { params: Promise<{ table: string }> }
 ) {
   try {
+    const { table } = await params
     const searchParams = request.nextUrl.searchParams
     const dbType = searchParams.get('type') || 'local'
     const customUrl = searchParams.get('url')
@@ -28,7 +29,7 @@ export async function GET(
     }
 
     const prisma = createPrismaClient(connectionString)
-    const tableName = params.table.toLowerCase()
+    const tableName = table.toLowerCase()
 
     // Маппинг имен таблиц к Prisma моделям
     const modelMap: Record<string, string> = {
@@ -45,7 +46,7 @@ export async function GET(
     if (!modelName) {
       await prisma.$disconnect()
       return NextResponse.json(
-        { error: `Table ${params.table} not found` },
+        { error: `Table ${table} not found` },
         { status: 404 }
       )
     }
@@ -90,9 +91,10 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { table: string } }
+  { params }: { params: Promise<{ table: string }> }
 ) {
   try {
+    const { table } = await params
     const searchParams = request.nextUrl.searchParams
     const dbType = searchParams.get('type') || 'local'
     const customUrl = searchParams.get('url')
@@ -113,7 +115,7 @@ export async function POST(
     }
 
     const prisma = createPrismaClient(connectionString)
-    const tableName = params.table.toLowerCase()
+    const tableName = table.toLowerCase()
 
     const modelMap: Record<string, string> = {
       user: 'user',
@@ -129,7 +131,7 @@ export async function POST(
     if (!modelName) {
       await prisma.$disconnect()
       return NextResponse.json(
-        { error: `Table ${params.table} not found` },
+        { error: `Table ${table} not found` },
         { status: 404 }
       )
     }
@@ -149,9 +151,10 @@ export async function POST(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { table: string } }
+  { params }: { params: Promise<{ table: string }> }
 ) {
   try {
+    const { table } = await params
     const searchParams = request.nextUrl.searchParams
     const dbType = searchParams.get('type') || 'local'
     const customUrl = searchParams.get('url')
@@ -180,7 +183,7 @@ export async function PUT(
     }
 
     const prisma = createPrismaClient(connectionString)
-    const tableName = params.table.toLowerCase()
+    const tableName = table.toLowerCase()
 
     const modelMap: Record<string, string> = {
       user: 'user',
@@ -196,7 +199,7 @@ export async function PUT(
     if (!modelName) {
       await prisma.$disconnect()
       return NextResponse.json(
-        { error: `Table ${params.table} not found` },
+        { error: `Table ${table} not found` },
         { status: 404 }
       )
     }
@@ -219,9 +222,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { table: string } }
+  { params }: { params: Promise<{ table: string }> }
 ) {
   try {
+    const { table } = await params
     const searchParams = request.nextUrl.searchParams
     const dbType = searchParams.get('type') || 'local'
     const customUrl = searchParams.get('url')
@@ -249,7 +253,7 @@ export async function DELETE(
     }
 
     const prisma = createPrismaClient(connectionString)
-    const tableName = params.table.toLowerCase()
+    const tableName = table.toLowerCase()
 
     const modelMap: Record<string, string> = {
       user: 'user',
@@ -265,7 +269,7 @@ export async function DELETE(
     if (!modelName) {
       await prisma.$disconnect()
       return NextResponse.json(
-        { error: `Table ${params.table} not found` },
+        { error: `Table ${table} not found` },
         { status: 404 }
       )
     }
