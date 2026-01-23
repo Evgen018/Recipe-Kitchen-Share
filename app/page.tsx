@@ -119,6 +119,31 @@ export default async function Home() {
           <br />
           Данные успешно загружены из NeonDB (PostgreSQL)
         </div>
+
+        <div
+          style={{
+            marginTop: '2rem',
+            padding: '1rem',
+            background: '#f0f9ff',
+            borderRadius: '8px',
+            border: '1px solid #bae6fd',
+          }}
+        >
+          <a
+            href="/view-db"
+            style={{
+              display: 'inline-block',
+              padding: '0.75rem 1.5rem',
+              backgroundColor: '#667eea',
+              color: 'white',
+              textDecoration: 'none',
+              borderRadius: '4px',
+              fontWeight: '600',
+            }}
+          >
+            🔍 Просмотр базы данных (view-db)
+          </a>
+        </div>
       </div>
     </main>
   )
