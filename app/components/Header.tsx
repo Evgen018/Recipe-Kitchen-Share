@@ -1,5 +1,6 @@
 import { auth, signOut } from '@/lib/auth'
 import Link from 'next/link'
+import { HeaderCabinetLink } from './HeaderNav'
 
 export async function Header() {
   const session = await auth()
@@ -45,16 +46,7 @@ export async function Header() {
             >
               {session.user.name || session.user.email}
             </span>
-            <Link
-              href="/dashboard"
-              style={{
-                fontSize: '0.9rem',
-                color: '#667eea',
-                textDecoration: 'none',
-              }}
-            >
-              Кабинет
-            </Link>
+            <HeaderCabinetLink />
             <form
               action={async () => {
                 'use server'

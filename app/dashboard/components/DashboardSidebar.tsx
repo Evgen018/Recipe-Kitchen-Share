@@ -2,10 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Globe, History, MessageSquare, Settings, Star } from 'lucide-react'
+import { Globe, History, MessageSquare, Settings, Star, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const nav = [
+  { href: '/dashboard/profile', label: 'Профиль', icon: User },
   { href: '/dashboard', label: 'Мои рецепты', icon: MessageSquare },
   { href: '/dashboard/public', label: 'Публичные рецепты', icon: Globe },
   { href: '/dashboard/favorites', label: 'Избранное', icon: Star },
