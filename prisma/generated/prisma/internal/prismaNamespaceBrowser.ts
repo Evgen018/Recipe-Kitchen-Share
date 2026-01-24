@@ -58,6 +58,7 @@ export const ModelName = {
   Note: 'Note',
   Category: 'Category',
   Recipe: 'Recipe',
+  RecipeFavorite: 'RecipeFavorite',
   Tag: 'Tag',
   RecipeTag: 'RecipeTag',
   Vote: 'Vote'
@@ -161,6 +162,16 @@ export const RecipeScalarFieldEnum = {
 } as const
 
 export type RecipeScalarFieldEnum = (typeof RecipeScalarFieldEnum)[keyof typeof RecipeScalarFieldEnum]
+
+
+export const RecipeFavoriteScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  recipeId: 'recipeId',
+  createdAt: 'createdAt'
+} as const
+
+export type RecipeFavoriteScalarFieldEnum = (typeof RecipeFavoriteScalarFieldEnum)[keyof typeof RecipeFavoriteScalarFieldEnum]
 
 
 export const TagScalarFieldEnum = {

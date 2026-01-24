@@ -75,6 +75,11 @@ export type Category = Prisma.CategoryModel
  */
 export type Recipe = Prisma.RecipeModel
 /**
+ * Model RecipeFavorite
+ * 
+ */
+export type RecipeFavorite = Prisma.RecipeFavoriteModel
+/**
  * Model Tag
  * 
  */

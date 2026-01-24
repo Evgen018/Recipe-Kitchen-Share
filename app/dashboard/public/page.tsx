@@ -2,14 +2,12 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { Button } from '@/app/components/ui/button'
-import { RecipeCard } from './components/RecipeCard'
-import { RecipeDialog } from './components/RecipeDialog'
-import { SearchRecipes } from './components/SearchRecipes'
+import { RecipeCard } from '../components/RecipeCard'
+import { SearchRecipes } from '../components/SearchRecipes'
 
 const PAGE_SIZE = 10
 
-export default async function DashboardPage({
+export default async function DashboardPublicPage({
   searchParams,
 }: {
   searchParams: Promise<{ q?: string; page?: string }>
@@ -22,7 +20,7 @@ export default async function DashboardPage({
   const search = (q || '').trim()
 
   const where = {
-    ownerId: session.user.id,
+    visibility: 'PUBLIC' as const,
     ...(search
       ? {
           OR: [
@@ -50,25 +48,20 @@ export default async function DashboardPage({
   ])
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
-  const hasNext = page < totalPages
-  const hasPrev = page > 1
 
   return (
     <>
       <h1 className="text-2xl font-semibold text-slate-900">Личный кабинет</h1>
-      <h2 className="mt-1 text-lg text-slate-600">Мои рецепты</h2>
+      <h2 className="mt-1 text-lg text-slate-600">Публичные рецепты</h2>
 
-      <div className="mt-4 flex flex-wrap items-center gap-3">
+      <div className="mt-4">
         <Suspense fallback={<div className="h-10 w-64 animate-pulse rounded-md bg-slate-100" />}>
-          <SearchRecipes className="w-64 min-w-0 flex-1" />
+          <SearchRecipes className="w-64 max-w-xs" />
         </Suspense>
-        <RecipeDialog recipe={null} trigger={<Button>+ Новый рецепт</Button>} />
       </div>
 
       {recipes.length === 0 ? (
-        <p className="mt-8 text-slate-500">
-          У вас пока нет рецептов — создайте первый.
-        </p>
+        <p className="mt-8 text-slate-500">Пока нет публичных рецептов.</p>
       ) : (
         <ul className="mt-6 space-y-4">
           {recipes.map((r) => (
@@ -80,7 +73,7 @@ export default async function DashboardPage({
                   visibility: r.visibility,
                 }}
                 currentUserId={session.user.id}
-                canDelete
+                canDelete={r.ownerId === session.user.id}
               />
             </li>
           ))}
@@ -89,7 +82,7 @@ export default async function DashboardPage({
 
       {totalPages > 1 && (
         <nav className="mt-6 flex items-center gap-2" aria-label="Пагинация">
-          {hasPrev && (
+          {page > 1 && (
             <Link
               href={`?${new URLSearchParams({ ...(search && { q: search }), page: String(page - 1) }).toString()}`}
               className="rounded border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
@@ -100,7 +93,7 @@ export default async function DashboardPage({
           <span className="text-sm text-slate-500">
             {page} из {totalPages}
           </span>
-          {hasNext && (
+          {page < totalPages && (
             <Link
               href={`?${new URLSearchParams({ ...(search && { q: search }), page: String(page + 1) }).toString()}`}
               className="rounded border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"

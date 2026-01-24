@@ -18,11 +18,12 @@ model User {
   image         String?
   createdAt     DateTime  @default(now())
 
-  accounts Account[]
-  sessions Session[]
-  notes    Note[]
-  recipes  Recipe[]
-  votes    Vote[]
+  accounts         Account[]
+  sessions         Session[]
+  notes            Note[]
+  recipes          Recipe[]
+  votes            Vote[]
+  recipeFavorites  RecipeFavorite[]
 
   @@map("users")
 }
@@ -103,14 +104,30 @@ model Recipe {
   publishedAt DateTime?
 
   // Relations
-  owner    User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  category Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  votes    Vote[]
-  tags     RecipeTag[]
+  owner       User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  category    Category         @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  votes       Vote[]
+  tags        RecipeTag[]
+  favoritedBy RecipeFavorite[]
 
   @@index([ownerId, updatedAt])
   @@index([visibility, createdAt])
   @@map("recipes")
+}
+
+model RecipeFavorite {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  recipeId  String   @map("recipe_id")
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, recipeId])
+  @@index([userId])
+  @@index([recipeId])
+  @@map("recipe_favorites")
 }
 
 model Tag {

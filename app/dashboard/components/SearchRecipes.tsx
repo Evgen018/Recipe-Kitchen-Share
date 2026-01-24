@@ -1,0 +1,54 @@
+'use client'
+
+import { useCallback, useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Search } from 'lucide-react'
+import { Input } from '@/app/components/ui/input'
+import { cn } from '@/lib/utils'
+
+const DEBOUNCE_MS = 300
+
+interface SearchRecipesProps {
+  placeholder?: string
+  className?: string
+}
+
+export function SearchRecipes({ placeholder = 'Поиск по названию и содержанию…', className }: SearchRecipesProps) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const q = searchParams.get('q') ?? ''
+  const [value, setValue] = useState(q)
+
+  useEffect(() => {
+    setValue(q)
+  }, [q])
+
+  const apply = useCallback(
+    (v: string) => {
+      const u = new URLSearchParams(searchParams.toString())
+      if (v.trim()) u.set('q', v.trim())
+      else u.delete('q')
+      u.delete('page')
+      router.push(`?${u.toString()}`)
+    },
+    [router, searchParams]
+  )
+
+  useEffect(() => {
+    const t = setTimeout(() => apply(value), DEBOUNCE_MS)
+    return () => clearTimeout(t)
+  }, [value, apply])
+
+  return (
+    <div className={cn('relative', className)}>
+      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+      <Input
+        type="search"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder={placeholder}
+        className="pl-9"
+      />
+    </div>
+  )
+}
