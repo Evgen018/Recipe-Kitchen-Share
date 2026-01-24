@@ -1,14 +1,14 @@
 'use client'
 
 import { MessageSquare, Pencil, Star, Trash2, Globe, Lock } from 'lucide-react'
-import { useTransition } from 'react'
+import { useState, useTransition } from 'react'
 import {
   deleteRecipe,
   toggleFavorite,
   togglePublic,
 } from '@/app/actions/recipes'
 import { Button } from '@/app/components/ui/button'
-import { RecipeDialog } from './RecipeDialog'
+import { RecipeViewModal } from './RecipeViewModal'
 import { cn } from '@/lib/utils'
 
 type Recipe = {
@@ -33,6 +33,8 @@ function preview(text: string, max = 120) {
 }
 
 export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCardProps) {
+  const [viewOpen, setViewOpen] = useState(false)
+  const [openInEditMode, setOpenInEditMode] = useState(false)
   const [pending, startTransition] = useTransition()
   const isOwner = recipe.ownerId === currentUserId
   const isPublic = recipe.visibility === 'PUBLIC'
@@ -71,7 +73,14 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
           <MessageSquare className="h-5 w-5" />
         </div>
         <div className="min-w-0 flex-1">
-          <h3 className="font-semibold text-slate-900">{recipe.title}</h3>
+          <button
+            type="button"
+            onClick={() => { setOpenInEditMode(false); setViewOpen(true) }}
+            className="text-left font-semibold text-slate-900 cursor-pointer hover:underline hover:text-sky-600"
+            title="Открыть рецепт"
+          >
+            {recipe.title}
+          </button>
           <p className="mt-0.5 line-clamp-2 text-sm text-slate-500">
             {preview(recipe.content)}
           </p>
@@ -85,6 +94,7 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
           disabled={pending}
           className={isFav ? 'text-amber-500' : 'text-slate-400'}
           aria-label={isFav ? 'Убрать из избранного' : 'В избранное'}
+          title={isFav ? 'Убрать из избранного' : 'Добавить в избранное'}
         >
           <Star className={cn('h-4 w-4', isFav && 'fill-current')} />
         </Button>
@@ -95,7 +105,7 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
             onClick={onTogglePublic}
             disabled={pending}
             aria-label={isPublic ? 'Сделать приватным' : 'Опубликовать'}
-            title={isPublic ? 'Публичный' : 'Приватный'}
+            title={isPublic ? 'Сделать приватным' : 'Опубликовать (видят все)'}
           >
             {isPublic ? (
               <Globe className="h-4 w-4 text-slate-500" />
@@ -105,14 +115,15 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
           </Button>
         )}
         {isOwner && (
-          <RecipeDialog
-            recipe={recipe}
-            trigger={
-              <Button variant="ghost" size="icon-sm" aria-label="Редактировать">
-                <Pencil className="h-4 w-4 text-slate-500" />
-              </Button>
-            }
-          />
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => { setOpenInEditMode(true); setViewOpen(true) }}
+            aria-label="Редактировать"
+            title="Редактировать рецепт"
+          >
+            <Pencil className="h-4 w-4 text-slate-500" />
+          </Button>
         )}
         {showDelete && (
           <Button
@@ -122,11 +133,24 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
             disabled={pending}
             className="text-red-500 hover:bg-red-50 hover:text-red-600"
             aria-label="Удалить"
+            title="Удалить рецепт"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
         )}
       </div>
+      <RecipeViewModal
+        recipe={{
+          id: recipe.id,
+          title: recipe.title,
+          content: recipe.content,
+          visibility: recipe.visibility,
+        }}
+        isOwner={isOwner}
+        open={viewOpen}
+        onOpenChange={setViewOpen}
+        initialMode={openInEditMode ? 'edit' : 'view'}
+      />
     </article>
   )
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { saveRecipe } from '@/app/actions/recipes'
 import {
   Dialog,
@@ -21,6 +22,14 @@ type Recipe = {
   visibility: string
 }
 
+function contentWithoutLeadingTitle(content: string, title: string): string {
+  if (!title?.trim() || !content) return content
+  const t = title.trim()
+  const c = content.trimStart()
+  if (!c.startsWith(t)) return content
+  return c.slice(t.length).trimStart()
+}
+
 interface RecipeDialogProps {
   recipe?: Recipe | null
   trigger: React.ReactNode
@@ -28,6 +37,7 @@ interface RecipeDialogProps {
 
 export function RecipeDialog({ recipe, trigger }: RecipeDialogProps) {
   const [open, setOpen] = useState(false)
+  const router = useRouter()
   const isEdit = !!recipe
 
   return (
@@ -43,7 +53,10 @@ export function RecipeDialog({ recipe, trigger }: RecipeDialogProps) {
             e.preventDefault()
             const formData = new FormData(e.currentTarget)
             const res = await saveRecipe(formData)
-            if (res?.ok) setOpen(false)
+            if (res?.ok) {
+              setOpen(false)
+              router.refresh()
+            }
           }}
         >
           {isEdit && <input type="hidden" name="recipeId" value={recipe.id} />}
@@ -62,7 +75,7 @@ export function RecipeDialog({ recipe, trigger }: RecipeDialogProps) {
             <Textarea
               id="content"
               name="content"
-              defaultValue={recipe?.content}
+              defaultValue={recipe ? contentWithoutLeadingTitle(recipe.content, recipe.title) : ''}
               required
               placeholder="Описание, ингредиенты, шаги…"
               rows={3}
