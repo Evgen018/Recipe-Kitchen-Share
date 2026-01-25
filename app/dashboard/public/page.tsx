@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { RecipeCard } from '../components/RecipeCard'
 import { RecipeTable } from '../components/RecipeTable'
 import { SearchRecipes } from '../components/SearchRecipes'
+import { SortSwitcher } from '../components/SortSwitcher'
 import { ViewToggle } from '../components/ViewToggle'
 
 const PAGE_SIZE = 10
@@ -12,15 +13,16 @@ const PAGE_SIZE = 10
 export default async function DashboardPublicPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; page?: string; view?: string }>
+  searchParams: Promise<{ q?: string; page?: string; view?: string; sort?: string }>
 }) {
   const session = await auth()
   if (!session?.user?.id) return null
 
-  const { q = '', page: pageStr = '1', view = 'cards' } = await searchParams
+  const { q = '', page: pageStr = '1', view = 'cards', sort = 'recent' } = await searchParams
   const page = Math.max(1, parseInt(String(pageStr), 10) || 1)
   const search = (q || '').trim()
   const isTableView = view === 'table'
+  const orderByPopular = sort === 'popular'
 
   const where = {
     visibility: 'PUBLIC' as const,
@@ -37,7 +39,9 @@ export default async function DashboardPublicPage({
   const [recipes, total] = await Promise.all([
     prisma.recipe.findMany({
       where,
-      orderBy: { updatedAt: 'desc' },
+      orderBy: orderByPopular
+        ? [{ likes: { _count: 'desc' } }, { createdAt: 'desc' }]
+        : { createdAt: 'desc' },
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
       include: {
@@ -45,12 +49,12 @@ export default async function DashboardPublicPage({
           where: { userId: session.user.id },
           select: { userId: true },
         },
-        votes: {
+        likes: {
           where: { userId: session.user.id },
           select: { id: true },
         },
         category: { select: { category: true } },
-        _count: { select: { votes: true } },
+        _count: { select: { likes: true } },
       },
     }),
     prisma.recipe.count({ where }),
@@ -67,9 +71,14 @@ export default async function DashboardPublicPage({
         <Suspense fallback={<div className="h-10 w-64 animate-pulse rounded-md bg-slate-100" />}>
           <SearchRecipes className="w-64 max-w-xs" />
         </Suspense>
-        <Suspense fallback={<div className="h-9 w-[180px] animate-pulse rounded-lg bg-slate-100" />}>
-          <ViewToggle />
-        </Suspense>
+        <div className="flex flex-wrap items-center gap-2">
+          <Suspense fallback={<div className="h-9 w-[140px] animate-pulse rounded-lg bg-slate-100" />}>
+            <SortSwitcher />
+          </Suspense>
+          <Suspense fallback={<div className="h-9 w-[180px] animate-pulse rounded-lg bg-slate-100" />}>
+            <ViewToggle />
+          </Suspense>
+        </div>
       </div>
 
       {recipes.length === 0 ? (
@@ -103,12 +112,13 @@ export default async function DashboardPublicPage({
       {totalPages > 1 && (
         <nav className="mt-6 flex items-center gap-2" aria-label="Пагинация">
           {page > 1 && (
-            <Link
-              href={`?${new URLSearchParams({
-                ...(search && { q: search }),
-                page: String(page - 1),
-                ...(isTableView && { view: 'table' }),
-              }).toString()}`}
+          <Link
+            href={`?${new URLSearchParams({
+              ...(search && { q: search }),
+              page: String(page - 1),
+              ...(isTableView && { view: 'table' }),
+              ...(sort !== 'recent' && { sort }),
+            }).toString()}`}
               className="rounded border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
             >
               Назад
@@ -118,12 +128,13 @@ export default async function DashboardPublicPage({
             {page} из {totalPages}
           </span>
           {page < totalPages && (
-            <Link
-              href={`?${new URLSearchParams({
-                ...(search && { q: search }),
-                page: String(page + 1),
-                ...(isTableView && { view: 'table' }),
-              }).toString()}`}
+          <Link
+            href={`?${new URLSearchParams({
+              ...(search && { q: search }),
+              page: String(page + 1),
+              ...(isTableView && { view: 'table' }),
+              ...(sort !== 'recent' && { sort }),
+            }).toString()}`}
               className="rounded border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
             >
               Вперёд

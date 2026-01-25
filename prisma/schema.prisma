@@ -23,6 +23,7 @@ model User {
   notes            Note[]
   recipes          Recipe[]
   votes            Vote[]
+  likes            Like[]
   recipeFavorites  RecipeFavorite[]
 
   @@map("users")
@@ -107,6 +108,7 @@ model Recipe {
   owner       User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   category    Category         @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   votes       Vote[]
+  likes       Like[]
   tags        RecipeTag[]
   favoritedBy RecipeFavorite[]
 
@@ -169,6 +171,21 @@ model Vote {
   @@index([recipeId])
   @@index([userId])
   @@map("votes")
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  recipeId  String   @map("recipe_id")
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, recipeId])
+  @@index([recipeId])
+  @@index([userId])
+  @@map("likes")
 }
 
 enum RecipeVisibility {

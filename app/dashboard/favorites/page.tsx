@@ -26,12 +26,12 @@ export default async function DashboardFavoritesPage({
         where: { userId: session.user.id },
         select: { userId: true },
       },
-      votes: {
+      likes: {
         where: { userId: session.user.id },
         select: { id: true },
       },
       category: { select: { category: true } },
-      _count: { select: { votes: true } },
+      _count: { select: { likes: true } },
     },
   })
 

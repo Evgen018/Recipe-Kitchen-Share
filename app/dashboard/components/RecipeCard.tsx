@@ -1,14 +1,14 @@
 'use client'
 
-import { Pencil, Star, ThumbsUp, Trash2, Globe, Lock } from 'lucide-react'
+import { Pencil, Star, Trash2, Globe, Lock } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import {
   deleteRecipe,
   toggleFavorite,
-  toggleLike,
   togglePublic,
 } from '@/app/actions/recipes'
 import { Button } from '@/app/components/ui/button'
+import { LikeButton } from './LikeButton'
 import { RecipeViewModal } from './RecipeViewModal'
 import { cn } from '@/lib/utils'
 
@@ -19,8 +19,8 @@ type Recipe = {
   visibility: string
   ownerId: string
   favoritedBy?: { userId: string }[]
-  _count?: { votes: number }
-  votes?: { id: string }[]
+  _count?: { likes: number }
+  likes?: { id: string }[]
 }
 
 interface RecipeCardProps {
@@ -42,14 +42,8 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
   const isOwner = recipe.ownerId === currentUserId
   const isPublic = recipe.visibility === 'PUBLIC'
   const isFav = recipe.favoritedBy?.some((f) => f.userId === currentUserId) ?? false
-  const likesCount = recipe._count?.votes ?? 0
-  const hasLiked = (recipe.votes?.length ?? 0) > 0
-
-  const onToggleLike = () => {
-    startTransition(async () => {
-      await toggleLike(recipe.id)
-    })
-  }
+  const likesCount = recipe._count?.likes ?? 0
+  const hasLiked = (recipe.likes?.length ?? 0) > 0
 
   const onDelete = () => {
     if (!confirm('Удалить рецепт?')) return
@@ -106,21 +100,13 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
         </div>
       </div>
       <div className="flex flex-wrap items-center justify-end gap-1">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onToggleLike}
-          disabled={pending}
-          className={cn(
-            'h-8 shrink-0 gap-1.5 px-2.5 border-slate-200 bg-white',
-            hasLiked && 'border-amber-200 bg-amber-50/80 text-amber-600'
-          )}
-          aria-label={hasLiked ? 'Убрать «Нравится»' : 'Нравится'}
-          title={hasLiked ? 'Убрать «Нравится» (дизлайк)' : 'Нравится'}
-        >
-          <ThumbsUp className={cn('h-4 w-4', hasLiked && 'fill-current')} />
-          <span className="text-sm tabular-nums">{likesCount}</span>
-        </Button>
+        {isPublic && (
+          <LikeButton
+            recipeId={recipe.id}
+            initialLiked={hasLiked}
+            initialCount={likesCount}
+          />
+        )}
         {isOwner && (
           <Button
             variant="ghost"

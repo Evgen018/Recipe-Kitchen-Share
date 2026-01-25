@@ -72,3 +72,8 @@ export type RecipeTag = Prisma.RecipeTagModel
  * 
  */
 export type Vote = Prisma.VoteModel
+/**
+ * Model Like
+ * 
+ */
+export type Like = Prisma.LikeModel

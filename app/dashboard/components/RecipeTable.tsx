@@ -1,14 +1,14 @@
 'use client'
 
-import { Pencil, Star, ThumbsUp, Trash2, Globe, Lock } from 'lucide-react'
+import { Pencil, Star, Trash2, Globe, Lock } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import {
   deleteRecipe,
   toggleFavorite,
-  toggleLike,
   togglePublic,
 } from '@/app/actions/recipes'
 import { Button } from '@/app/components/ui/button'
+import { LikeButton } from './LikeButton'
 import { RecipeViewModal } from './RecipeViewModal'
 import { cn } from '@/lib/utils'
 
@@ -20,9 +20,9 @@ type RecipeRow = {
   ownerId: string
   updatedAt: Date
   favoritedBy?: { userId: string }[]
-  votes?: { id: string }[]
+  likes?: { id: string }[]
   category?: { category: string } | null
-  _count?: { votes: number }
+  _count?: { likes: number }
   /** Вычисляется на сервере: показывать ли кнопку удаления для этой строки. */
   showDelete?: boolean
 }
@@ -100,14 +100,8 @@ function RecipeTableRow({
   const isOwner = r.ownerId === currentUserId
   const isPublic = r.visibility === 'PUBLIC'
   const isFav = r.favoritedBy?.some((f) => f.userId === currentUserId) ?? false
-  const likesCount = r._count?.votes ?? 0
-  const hasLiked = (r.votes?.length ?? 0) > 0
-
-  const onToggleLike = () => {
-    startTransition(async () => {
-      await toggleLike(r.id)
-    })
-  }
+  const likesCount = r._count?.likes ?? 0
+  const hasLiked = (r.likes?.length ?? 0) > 0
 
   const onDelete = () => {
     if (!confirm('Удалить рецепт?')) return
@@ -182,21 +176,15 @@ function RecipeTableRow({
         </span>
       </td>
       <td className="px-4 py-3">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onToggleLike}
-          disabled={pending}
-          className={cn(
-            'h-8 shrink-0 gap-1.5 px-2.5 border-slate-200 bg-white',
-            hasLiked && 'border-amber-200 bg-amber-50/80 text-amber-600'
-          )}
-          aria-label={hasLiked ? 'Убрать «Нравится»' : 'Нравится'}
-          title={hasLiked ? 'Убрать «Нравится» (дизлайк)' : 'Нравится'}
-        >
-          <ThumbsUp className={cn('h-4 w-4', hasLiked && 'fill-current')} />
-          <span className="text-sm tabular-nums">{likesCount}</span>
-        </Button>
+        {isPublic ? (
+          <LikeButton
+            recipeId={r.id}
+            initialLiked={hasLiked}
+            initialCount={likesCount}
+          />
+        ) : (
+          <span className="text-slate-400">—</span>
+        )}
       </td>
       <td className="px-4 py-3">
         <div className="flex items-center gap-1">
