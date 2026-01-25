@@ -57,13 +57,13 @@ export function RecipeTable({ recipes, currentUserId }: RecipeTableProps) {
               Категория
             </th>
             <th className="px-4 py-3 font-semibold uppercase tracking-wide text-slate-500">
-              Нравится
-            </th>
-            <th className="px-4 py-3 font-semibold uppercase tracking-wide text-slate-500">
               Обновлено
             </th>
             <th className="px-4 py-3 font-semibold uppercase tracking-wide text-slate-500">
               Статус
+            </th>
+            <th className="px-4 py-3 font-semibold uppercase tracking-wide text-slate-500">
+              Нравится
             </th>
             <th className="px-4 py-3 font-semibold uppercase tracking-wide text-slate-500">
               Действия
@@ -168,6 +168,19 @@ function RecipeTableRow({
       <td className="px-4 py-3 text-slate-500">
         {r.category?.category ?? '—'}
       </td>
+      <td className="px-4 py-3 text-slate-600">
+        {formatDate(r.updatedAt)}
+      </td>
+      <td className="px-4 py-3">
+        <span
+          className={cn(
+            'inline-block rounded-md px-2 py-0.5 text-xs font-medium',
+            isPublic ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-600'
+          )}
+        >
+          {isPublic ? 'Публичный' : 'Приватный'}
+        </span>
+      </td>
       <td className="px-4 py-3">
         <Button
           variant="outline"
@@ -184,19 +197,6 @@ function RecipeTableRow({
           <ThumbsUp className={cn('h-4 w-4', hasLiked && 'fill-current')} />
           <span className="text-sm tabular-nums">{likesCount}</span>
         </Button>
-      </td>
-      <td className="px-4 py-3 text-slate-600">
-        {formatDate(r.updatedAt)}
-      </td>
-      <td className="px-4 py-3">
-        <span
-          className={cn(
-            'inline-block rounded-md px-2 py-0.5 text-xs font-medium',
-            isPublic ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-600'
-          )}
-        >
-          {isPublic ? 'Публичный' : 'Приватный'}
-        </span>
       </td>
       <td className="px-4 py-3">
         <div className="flex items-center gap-1">
