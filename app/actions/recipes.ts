@@ -154,3 +154,29 @@ export async function toggleFavorite(recipeId: string) {
   revalidatePath('/dashboard/favorites')
   return { ok: true }
 }
+
+/** toggleLike: один пользователь — один голос. Повторное нажатие убирает лайк (дизлайк). */
+export async function toggleLike(recipeId: string) {
+  const session = await auth()
+  if (!session?.user?.id) return { error: 'Необходима авторизация' }
+
+  const recipe = await prisma.recipe.findUnique({ where: { id: recipeId } })
+  if (!recipe) return { error: 'Рецепт не найден' }
+
+  const existing = await prisma.vote.findUnique({
+    where: { userId_recipeId: { userId: session.user.id, recipeId } },
+  })
+  if (existing) {
+    await prisma.vote.delete({
+      where: { userId_recipeId: { userId: session.user.id, recipeId } },
+    })
+  } else {
+    await prisma.vote.create({
+      data: { userId: session.user.id, recipeId, value: 1 },
+    })
+  }
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/public')
+  revalidatePath('/dashboard/favorites')
+  return { ok: true }
+}

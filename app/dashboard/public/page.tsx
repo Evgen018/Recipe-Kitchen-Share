@@ -45,6 +45,10 @@ export default async function DashboardPublicPage({
           where: { userId: session.user.id },
           select: { userId: true },
         },
+        votes: {
+          where: { userId: session.user.id },
+          select: { id: true },
+        },
         category: { select: { category: true } },
         _count: { select: { votes: true } },
       },
