@@ -1,6 +1,6 @@
 'use client'
 
-import { MessageSquare, Pencil, Star, ThumbsUp, Trash2, Globe, Lock } from 'lucide-react'
+import { Pencil, Star, ThumbsUp, Trash2, Globe, Lock } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import {
   deleteRecipe,
@@ -79,10 +79,18 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
         pending && 'opacity-70'
       )}
     >
-      <div className="flex gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
-          <MessageSquare className="h-5 w-5" />
-        </div>
+      <div className="flex items-start gap-2">
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          onClick={onToggleFavorite}
+          disabled={pending}
+          className={cn('shrink-0', isFav ? 'text-amber-500' : 'text-slate-400')}
+          aria-label={isFav ? 'Убрать из избранного' : 'В избранное'}
+          title={isFav ? 'Убрать из избранного' : 'Добавить в избранное'}
+        >
+          <Star className={cn('h-4 w-4', isFav && 'fill-current')} />
+        </Button>
         <div className="min-w-0 flex-1">
           <button
             type="button"
@@ -112,17 +120,6 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
         >
           <ThumbsUp className={cn('h-4 w-4', hasLiked && 'fill-current')} />
           <span className="text-sm tabular-nums">{likesCount}</span>
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          onClick={onToggleFavorite}
-          disabled={pending}
-          className={isFav ? 'text-amber-500' : 'text-slate-400'}
-          aria-label={isFav ? 'Убрать из избранного' : 'В избранное'}
-          title={isFav ? 'Убрать из избранного' : 'Добавить в избранное'}
-        >
-          <Star className={cn('h-4 w-4', isFav && 'fill-current')} />
         </Button>
         {isOwner && (
           <Button
