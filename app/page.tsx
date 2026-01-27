@@ -21,7 +21,8 @@ export default async function Home() {
       {/* Hero-секция */}
       <section
         style={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: '#3838D5',
+          backgroundImage: 'radial-gradient(circle, rgba(56, 56, 213, 0.96) 14%, rgba(15, 158, 166, 1) 100%)',
           color: 'white',
           padding: '4rem 1.5rem',
           textAlign: 'center',

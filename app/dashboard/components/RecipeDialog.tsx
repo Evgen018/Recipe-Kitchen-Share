@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { saveRecipe } from '@/app/actions/recipes'
+import { saveRecipe, getAvailableCategories } from '@/app/actions/recipes'
 import {
   Dialog,
   DialogContent,
@@ -20,6 +20,7 @@ type Recipe = {
   title: string
   content: string
   visibility: string
+  categoryId?: string
 }
 
 function contentWithoutLeadingTitle(content: string, title: string): string {
@@ -37,8 +38,15 @@ interface RecipeDialogProps {
 
 export function RecipeDialog({ recipe, trigger }: RecipeDialogProps) {
   const [open, setOpen] = useState(false)
+  const [categories, setCategories] = useState<Array<{ id: string; category: string }>>([])
   const router = useRouter()
   const isEdit = !!recipe
+
+  useEffect(() => {
+    if (open) {
+      getAvailableCategories().then(setCategories)
+    }
+  }, [open])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -69,6 +77,23 @@ export function RecipeDialog({ recipe, trigger }: RecipeDialogProps) {
               required
               placeholder="Название рецепта"
             />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="categoryId">Категория</Label>
+            <select
+              id="categoryId"
+              name="categoryId"
+              required
+              defaultValue={recipe?.categoryId || ''}
+              className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <option value="">Выберите категорию</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.category}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="grid gap-2">
             <Label htmlFor="content">Содержание</Label>

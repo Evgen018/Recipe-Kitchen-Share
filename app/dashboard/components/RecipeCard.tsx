@@ -18,6 +18,7 @@ type Recipe = {
   content: string
   visibility: string
   ownerId: string
+  categoryId?: string
   favoritedBy?: { userId: string }[]
   _count?: { likes: number }
   likes?: { id: string }[]
@@ -154,6 +155,7 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
           title: recipe.title,
           content: recipe.content,
           visibility: recipe.visibility,
+          categoryId: recipe.categoryId,
         }}
         isOwner={isOwner}
         open={viewOpen}

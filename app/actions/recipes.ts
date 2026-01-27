@@ -10,15 +10,25 @@ const recipeSchema = z.object({
   title: z.string().min(1, 'Введите название'),
   content: z.string().min(1, 'Введите содержание'),
   isPublic: z.boolean(),
+  categoryId: z.string().min(1, 'Выберите категорию'),
 })
 
-/** Категория по умолчанию для рецептов из личного кабинета (создаётся при необходимости). */
-async function getOrCreateDefaultCategory() {
-  let cat = await prisma.category.findFirst({ where: { category: 'Прочее' } })
+/** Получить или создать категорию по названию */
+async function getOrCreateCategory(categoryName: string) {
+  let cat = await prisma.category.findFirst({ where: { category: categoryName } })
   if (!cat) {
-    cat = await prisma.category.create({ data: { category: 'Прочее' } })
+    cat = await prisma.category.create({ data: { category: categoryName } })
   }
   return cat
+}
+
+/** Получить все доступные категории (Напитки, Еда, Десерт) */
+export async function getAvailableCategories() {
+  const categoryNames = ['Напитки', 'Еда', 'Десерт']
+  const categories = await Promise.all(
+    categoryNames.map((name) => getOrCreateCategory(name))
+  )
+  return categories
 }
 
 /** createRecipe: проверка прав — создаём только от своего userId. */
@@ -30,16 +40,16 @@ export async function createRecipe(formData: FormData) {
     title: formData.get('title'),
     content: formData.get('content'),
     isPublic: formData.get('isPublic') === 'true',
+    categoryId: formData.get('categoryId'),
   })
   if (!parsed.success) {
     return { error: parsed.error.flatten().fieldErrors.title?.[0] ?? 'Ошибка валидации' }
   }
 
-  const cat = await getOrCreateDefaultCategory()
   await prisma.recipe.create({
     data: {
       ownerId: session.user.id,
-      categoryId: cat.id,
+      categoryId: parsed.data.categoryId,
       title: parsed.data.title,
       content: parsed.data.content,
       visibility: parsed.data.isPublic ? RecipeVisibility.PUBLIC : RecipeVisibility.PRIVATE,
@@ -64,6 +74,7 @@ export async function updateRecipe(recipeId: string, formData: FormData) {
     title: formData.get('title'),
     content: formData.get('content'),
     isPublic: formData.get('isPublic') === 'true',
+    categoryId: formData.get('categoryId'),
   })
   if (!parsed.success) {
     return { error: parsed.error.flatten().fieldErrors.title?.[0] ?? 'Ошибка валидации' }
@@ -74,6 +85,7 @@ export async function updateRecipe(recipeId: string, formData: FormData) {
     data: {
       title: parsed.data.title,
       content: parsed.data.content,
+      categoryId: parsed.data.categoryId,
       visibility: parsed.data.isPublic ? RecipeVisibility.PUBLIC : RecipeVisibility.PRIVATE,
       updatedAt: new Date(),
     },

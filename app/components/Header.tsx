@@ -111,7 +111,7 @@ export async function Header() {
                 style={{
                   padding: '0.4rem 0.9rem',
                   fontSize: '0.9rem',
-                  background: '#667eea',
+                  background: 'rgba(15, 158, 166, 1)',
                   color: 'white',
                   border: 'none',
                   borderRadius: '6px',

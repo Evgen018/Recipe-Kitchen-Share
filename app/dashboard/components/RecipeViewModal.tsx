@@ -14,9 +14,9 @@ import { Button } from '@/app/components/ui/button'
 import { Input } from '@/app/components/ui/input'
 import { Label } from '@/app/components/ui/label'
 import { Textarea } from '@/app/components/ui/textarea'
-import { saveRecipe } from '@/app/actions/recipes'
+import { saveRecipe, getAvailableCategories } from '@/app/actions/recipes'
 
-type Recipe = { id: string; title: string; content: string; visibility: string }
+type Recipe = { id: string; title: string; content: string; visibility: string; categoryId?: string }
 
 /** Убирает дублирование: если content начинается с title, возвращает только остаток. */
 function contentWithoutLeadingTitle(content: string, title: string): string {
@@ -44,12 +44,19 @@ export function RecipeViewModal({
   initialMode = 'view',
 }: RecipeViewModalProps) {
   const [mode, setMode] = useState<'view' | 'edit'>(initialMode)
+  const [categories, setCategories] = useState<Array<{ id: string; category: string }>>([])
   const router = useRouter()
 
   useEffect(() => {
     if (!open) setMode('view')
     else setMode(initialMode === 'edit' ? 'edit' : 'view')
   }, [open, initialMode])
+
+  useEffect(() => {
+    if (open && mode === 'edit') {
+      getAvailableCategories().then(setCategories)
+    }
+  }, [open, mode])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -108,6 +115,23 @@ export function RecipeViewModal({
                 required
                 placeholder="Название рецепта"
               />
+            </div>
+            <div className="grid gap-1 shrink-0">
+              <Label htmlFor="v-categoryId">Категория</Label>
+              <select
+                id="v-categoryId"
+                name="categoryId"
+                required
+                defaultValue={recipe.categoryId || ''}
+                className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="">Выберите категорию</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.category}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="grid min-h-0 flex-1 grid-rows-[auto_1fr] gap-1">
               <Label htmlFor="v-content" className="shrink-0">Содержание</Label>
