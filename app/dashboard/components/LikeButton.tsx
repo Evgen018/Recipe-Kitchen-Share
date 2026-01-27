@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Button } from '@/app/components/ui/button'
 import { cn } from '@/lib/utils'
+import { useTranslations } from '@/app/components/LocaleProvider'
 
 interface LikeButtonProps {
   recipeId: string
@@ -13,6 +14,7 @@ interface LikeButtonProps {
 }
 
 export function LikeButton({ recipeId, initialLiked, initialCount }: LikeButtonProps) {
+  const t = useTranslations()
   const router = useRouter()
   const [liked, setLiked] = useState(initialLiked)
   const [count, setCount] = useState(initialCount)
@@ -30,13 +32,13 @@ export function LikeButton({ recipeId, initialLiked, initialCount }: LikeButtonP
         return
       }
       if (!res.ok) {
-        setError(data?.error === 'Попробуйте позже' ? data.error : 'Попробуйте позже')
+        setError(t(typeof data?.error === 'string' ? data.error : 'errors.tryLater'))
         return
       }
       setLiked(data.liked ?? !liked)
       setCount(typeof data.likesCount === 'number' ? data.likesCount : count + (data.liked ? 1 : -1))
     } catch {
-      setError('Попробуйте позже')
+      setError(t('errors.tryLater'))
     } finally {
       setLoading(false)
     }
@@ -53,8 +55,8 @@ export function LikeButton({ recipeId, initialLiked, initialCount }: LikeButtonP
           'h-8 shrink-0 gap-1.5 px-2.5 border-slate-200 bg-white',
           liked && 'border-amber-200 bg-amber-50/80 text-amber-600'
         )}
-        aria-label={liked ? 'Убрать «Нравится»' : 'Нравится'}
-        title={liked ? 'Убрать «Нравится» (дизлайк)' : 'Нравится'}
+        aria-label={liked ? t('recipe.unlike') : t('recipe.like')}
+        title={liked ? t('recipe.unlikeTitle') : t('recipe.like')}
       >
         <ThumbsUp className={cn('h-4 w-4', liked && 'fill-current')} />
         <span className="text-sm tabular-nums">{count}</span>

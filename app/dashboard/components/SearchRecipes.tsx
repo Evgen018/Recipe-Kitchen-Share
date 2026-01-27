@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { Search } from 'lucide-react'
 import { Input } from '@/app/components/ui/input'
 import { cn } from '@/lib/utils'
+import { useTranslations } from '@/app/components/LocaleProvider'
 
 const DEBOUNCE_MS = 300
 
@@ -13,7 +14,9 @@ interface SearchRecipesProps {
   className?: string
 }
 
-export function SearchRecipes({ placeholder = 'Поиск по названию', className }: SearchRecipesProps) {
+export function SearchRecipes({ placeholder, className }: SearchRecipesProps) {
+  const t = useTranslations()
+  const resolvedPlaceholder = placeholder ?? t('dashboard.searchPlaceholder')
   const router = useRouter()
   const searchParams = useSearchParams()
   const q = searchParams.get('q') ?? ''
@@ -46,7 +49,7 @@ export function SearchRecipes({ placeholder = 'Поиск по названию'
         type="search"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder={placeholder}
+        placeholder={resolvedPlaceholder}
         className="pl-9"
       />
     </div>

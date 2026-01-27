@@ -1,6 +1,11 @@
+import type { Locale } from '@/lib/i18n'
 import { FooterPlaceholderLinks } from './FooterPlaceholderLinks'
 
-export function Footer() {
+type T = (key: string) => string
+
+type Props = { locale: Locale; t: T }
+
+export function Footer({ locale, t }: Props) {
   const currentYear = new Date().getFullYear()
 
   return (

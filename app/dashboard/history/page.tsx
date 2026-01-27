@@ -1,9 +1,13 @@
-export default function DashboardHistoryPage() {
+import { getLocale, getT } from '@/lib/i18n'
+
+export default async function DashboardHistoryPage() {
+  const locale = await getLocale()
+  const t = getT(locale)
   return (
     <>
-      <h1 className="text-2xl font-semibold text-slate-900">Личный кабинет</h1>
-      <h2 className="mt-1 text-lg text-slate-600">История</h2>
-      <p className="mt-8 text-slate-500">Скоро…</p>
+      <h1 className="text-2xl font-semibold text-slate-900">{t('dashboard.title')}</h1>
+      <h2 className="mt-1 text-lg text-slate-600">{t('sidebar.history')}</h2>
+      <p className="mt-8 text-slate-500">{t('dashboard.comingSoon')}</p>
     </>
   )
 }

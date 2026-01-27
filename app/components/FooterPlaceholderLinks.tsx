@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import { useTranslations } from './LocaleProvider'
 
 const linkStyle = {
   fontSize: '0.9rem',
@@ -14,6 +15,7 @@ const linkStyle = {
 }
 
 export function FooterPlaceholderLinks() {
+  const t = useTranslations()
   const [hint, setHint] = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -30,10 +32,10 @@ export function FooterPlaceholderLinks() {
   return (
     <>
       <button type="button" onClick={onClick} style={linkStyle}>
-        Контакты
+        {t('footer.contacts')}
       </button>
       <button type="button" onClick={onClick} style={linkStyle}>
-        О нас
+        {t('footer.about')}
       </button>
       {hint && (
         <span
@@ -54,7 +56,7 @@ export function FooterPlaceholderLinks() {
             boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
           }}
         >
-          Страница в разработке
+          {t('footer.devHint')}
         </span>
       )}
     </>

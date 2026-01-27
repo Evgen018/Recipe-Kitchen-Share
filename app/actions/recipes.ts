@@ -7,10 +7,10 @@ import { revalidatePath, revalidateTag } from 'next/cache'
 import { z } from 'zod'
 
 const recipeSchema = z.object({
-  title: z.string().min(1, 'Введите название'),
-  content: z.string().min(1, 'Введите содержание'),
+  title: z.string().min(1, 'validation.titleRequired'),
+  content: z.string().min(1, 'validation.contentRequired'),
   isPublic: z.boolean(),
-  categoryId: z.string().min(1, 'Выберите категорию'),
+  categoryId: z.string().min(1, 'validation.categoryRequired'),
 })
 
 /** Получить или создать категорию по названию */
@@ -32,10 +32,14 @@ export async function getAvailableCategories() {
   return categories
 }
 
+function firstValidationError(flat: { title?: string[]; content?: string[]; categoryId?: string[] }): string {
+  return flat.title?.[0] ?? flat.content?.[0] ?? flat.categoryId?.[0] ?? 'validation.error'
+}
+
 /** createRecipe: проверка прав — создаём только от своего userId. */
 export async function createRecipe(formData: FormData) {
   const session = await auth()
-  if (!session?.user?.id) return { error: 'Необходима авторизация' }
+  if (!session?.user?.id) return { error: 'errors.authRequired' }
 
   const parsed = recipeSchema.safeParse({
     title: formData.get('title'),
@@ -44,7 +48,8 @@ export async function createRecipe(formData: FormData) {
     categoryId: formData.get('categoryId'),
   })
   if (!parsed.success) {
-    return { error: parsed.error.flatten().fieldErrors.title?.[0] ?? 'Ошибка валидации' }
+    const flat = parsed.error.flatten().fieldErrors as { title?: string[]; content?: string[]; categoryId?: string[] }
+    return { error: firstValidationError(flat) }
   }
 
   await prisma.recipe.create({
@@ -66,11 +71,11 @@ export async function createRecipe(formData: FormData) {
 /** updateRecipe: только владелец может редактировать. */
 export async function updateRecipe(recipeId: string, formData: FormData) {
   const session = await auth()
-  if (!session?.user?.id) return { error: 'Необходима авторизация' }
+  if (!session?.user?.id) return { error: 'errors.authRequired' }
 
   const recipe = await prisma.recipe.findUnique({ where: { id: recipeId } })
-  if (!recipe) return { error: 'Рецепт не найден' }
-  if (recipe.ownerId !== session.user.id) return { error: 'Нет прав на редактирование' }
+  if (!recipe) return { error: 'errors.notFound' }
+  if (recipe.ownerId !== session.user.id) return { error: 'errors.noPermission' }
 
   const parsed = recipeSchema.safeParse({
     title: formData.get('title'),
@@ -79,7 +84,8 @@ export async function updateRecipe(recipeId: string, formData: FormData) {
     categoryId: formData.get('categoryId'),
   })
   if (!parsed.success) {
-    return { error: parsed.error.flatten().fieldErrors.title?.[0] ?? 'Ошибка валидации' }
+    const flat = parsed.error.flatten().fieldErrors as { title?: string[]; content?: string[]; categoryId?: string[] }
+    return { error: firstValidationError(flat) }
   }
 
   await prisma.recipe.update({
@@ -102,11 +108,11 @@ export async function updateRecipe(recipeId: string, formData: FormData) {
 /** deleteRecipe: только владелец может удалять. */
 export async function deleteRecipe(recipeId: string) {
   const session = await auth()
-  if (!session?.user?.id) return { error: 'Необходима авторизация' }
+  if (!session?.user?.id) return { error: 'errors.authRequired' }
 
   const recipe = await prisma.recipe.findUnique({ where: { id: recipeId } })
-  if (!recipe) return { error: 'Рецепт не найден' }
-  if (recipe.ownerId !== session.user.id) return { error: 'Нет прав на удаление' }
+  if (!recipe) return { error: 'errors.notFound' }
+  if (recipe.ownerId !== session.user.id) return { error: 'errors.noPermission' }
 
   await prisma.recipe.delete({ where: { id: recipeId } })
   revalidatePath('/dashboard')
@@ -119,11 +125,11 @@ export async function deleteRecipe(recipeId: string) {
 /** togglePublic: только владелец. */
 export async function togglePublic(recipeId: string) {
   const session = await auth()
-  if (!session?.user?.id) return { error: 'Необходима авторизация' }
+  if (!session?.user?.id) return { error: 'errors.authRequired' }
 
   const recipe = await prisma.recipe.findUnique({ where: { id: recipeId } })
-  if (!recipe) return { error: 'Рецепт не найден' }
-  if (recipe.ownerId !== session.user.id) return { error: 'Нет прав' }
+  if (!recipe) return { error: 'errors.notFound' }
+  if (recipe.ownerId !== session.user.id) return { error: 'errors.noPermission' }
 
   await prisma.recipe.update({
     where: { id: recipeId },
@@ -149,10 +155,10 @@ export async function saveRecipe(formData: FormData) {
 /** toggleFavorite: добавить/удалить из избранного для текущего пользователя. */
 export async function toggleFavorite(recipeId: string) {
   const session = await auth()
-  if (!session?.user?.id) return { error: 'Необходима авторизация' }
+  if (!session?.user?.id) return { error: 'errors.authRequired' }
 
   const recipe = await prisma.recipe.findUnique({ where: { id: recipeId } })
-  if (!recipe) return { error: 'Рецепт не найден' }
+  if (!recipe) return { error: 'errors.notFound' }
 
   const existing = await prisma.recipeFavorite.findUnique({
     where: { userId_recipeId: { userId: session.user.id, recipeId } },

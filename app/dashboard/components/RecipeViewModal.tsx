@@ -15,6 +15,7 @@ import { Input } from '@/app/components/ui/input'
 import { Label } from '@/app/components/ui/label'
 import { Textarea } from '@/app/components/ui/textarea'
 import { saveRecipe, getAvailableCategories } from '@/app/actions/recipes'
+import { useTranslations } from '@/app/components/LocaleProvider'
 
 type Recipe = { id: string; title: string; content: string; visibility: string; categoryId?: string }
 
@@ -43,6 +44,7 @@ export function RecipeViewModal({
   onOpenChange,
   initialMode = 'view',
 }: RecipeViewModalProps) {
+  const t = useTranslations()
   const [mode, setMode] = useState<'view' | 'edit'>(initialMode)
   const [categories, setCategories] = useState<Array<{ id: string; category: string }>>([])
   const [categoryId, setCategoryId] = useState(recipe.categoryId ?? '')
@@ -73,7 +75,7 @@ export function RecipeViewModal({
       >
         <DialogHeader className="flex shrink-0 flex-row items-center justify-between gap-4">
           <DialogTitle className="text-xl md:text-2xl">
-            {mode === 'view' ? recipe.title : 'Редактировать рецепт'}
+            {mode === 'view' ? recipe.title : t('recipe.edit')}
           </DialogTitle>
           <div className="flex items-center gap-2">
             {mode === 'view' && isOwner && (
@@ -82,11 +84,11 @@ export function RecipeViewModal({
                 onClick={() => setMode('edit')}
                 className="bg-sky-500 text-white shadow-sm hover:bg-sky-600 border-0"
               >
-                Правка
+                {t('recipe.editButton')}
               </Button>
             )}
             <DialogClose asChild>
-              <Button variant="ghost" size="icon" aria-label="Закрыть" title="Закрыть" className="text-red-500 hover:bg-red-50 hover:text-red-600">
+              <Button variant="ghost" size="icon" aria-label={t('common.close')} title={t('common.close')} className="text-red-500 hover:bg-red-50 hover:text-red-600">
                 <X className="h-4 w-4" />
               </Button>
             </DialogClose>
@@ -110,22 +112,24 @@ export function RecipeViewModal({
               if (res?.ok) {
                 setMode('view')
                 router.refresh()
+              } else if (res?.error) {
+                alert(t(res.error))
               }
             }}
           >
             <input type="hidden" name="recipeId" value={recipe.id} />
             <div className="grid gap-1 shrink-0">
-              <Label htmlFor="v-title">Название</Label>
+              <Label htmlFor="v-title">{t('recipe.titleLabel')}</Label>
               <Input
                 id="v-title"
                 name="title"
                 defaultValue={recipe.title}
                 required
-                placeholder="Название рецепта"
+                placeholder={t('recipe.titlePlaceholder')}
               />
             </div>
             <div className="grid gap-1 shrink-0">
-              <Label htmlFor="v-categoryId">Категория</Label>
+              <Label htmlFor="v-categoryId">{t('recipe.categoryLabel')}</Label>
               <select
                 id="v-categoryId"
                 name="categoryId"
@@ -134,7 +138,7 @@ export function RecipeViewModal({
                 onChange={(e) => setCategoryId(e.target.value)}
                 className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <option value="">Выберите категорию</option>
+                <option value="">{t('recipe.chooseCategory')}</option>
                 {categories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.category}
@@ -143,13 +147,13 @@ export function RecipeViewModal({
               </select>
             </div>
             <div className="grid min-h-0 flex-1 grid-rows-[auto_1fr] gap-1">
-              <Label htmlFor="v-content" className="shrink-0">Содержание</Label>
+              <Label htmlFor="v-content" className="shrink-0">{t('recipe.contentLabel')}</Label>
               <Textarea
                 id="v-content"
                 name="content"
                 defaultValue={contentWithoutLeadingTitle(recipe.content, recipe.title)}
                 required
-                placeholder="Описание, ингредиенты, шаги…"
+                placeholder={t('recipe.contentPlaceholder')}
                 className="min-h-[180px] resize-y"
               />
             </div>
@@ -163,14 +167,14 @@ export function RecipeViewModal({
                 className="h-4 w-4 rounded border-slate-300"
               />
               <Label htmlFor="v-isPublic" className="cursor-pointer font-normal">
-                Публичный (видят все)
+                {t('recipe.publicLabel')}
               </Label>
             </div>
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={() => setMode('view')}>
-                Отмена
+                {t('common.cancel')}
               </Button>
-              <Button type="submit">Сохранить</Button>
+              <Button type="submit">{t('common.save')}</Button>
             </div>
           </form>
         )}

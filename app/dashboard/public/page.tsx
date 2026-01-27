@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { auth } from '@/lib/auth'
+import { getLocale, getT } from '@/lib/i18n'
 import { getCachedPublicRecipes } from './fetchPublicRecipes'
 import { RecipeCard } from '../components/RecipeCard'
 import { RecipeTable } from '../components/RecipeTable'
@@ -18,7 +19,9 @@ export default async function DashboardPublicPage({
   const session = await auth()
   if (!session?.user?.id) return null
 
-  const { q = '', page: pageStr = '1', view = 'cards', sort = 'recent' } = await searchParams
+  const [locale, params] = await Promise.all([getLocale(), searchParams])
+  const t = getT(locale)
+  const { q = '', page: pageStr = '1', view = 'cards', sort = 'recent' } = params
   const page = Math.max(1, parseInt(String(pageStr), 10) || 1)
   const search = (q || '').trim()
   const isTableView = view === 'table'
@@ -35,8 +38,8 @@ export default async function DashboardPublicPage({
 
   return (
     <>
-      <h1 className="text-2xl font-semibold text-slate-900">Личный кабинет</h1>
-      <h2 className="mt-1 text-lg text-slate-600">Публичные рецепты</h2>
+      <h1 className="text-2xl font-semibold text-slate-900">{t('dashboard.title')}</h1>
+      <h2 className="mt-1 text-lg text-slate-600">{t('dashboard.public')}</h2>
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
         <Suspense fallback={<div className="h-10 w-64 animate-pulse rounded-md bg-slate-100" />}>
@@ -53,7 +56,7 @@ export default async function DashboardPublicPage({
       </div>
 
       {recipes.length === 0 ? (
-        <p className="mt-8 text-slate-500">Пока нет публичных рецептов.</p>
+        <p className="mt-8 text-slate-500">{t('dashboard.noPublic')}</p>
       ) : isTableView ? (
         <RecipeTable
           recipes={recipes.map((r) => ({
@@ -81,37 +84,37 @@ export default async function DashboardPublicPage({
       )}
 
       {totalPages > 1 && (
-        <nav className="mt-6 flex items-center gap-2" aria-label="Пагинация">
+        <nav className="mt-6 flex items-center gap-2" aria-label={t('pagination.ariaLabel')}>
           {page > 1 && (
-          <Link
-            href={`?${new URLSearchParams({
-              ...(search && { q: search }),
-              page: String(page - 1),
-              ...(isTableView && { view: 'table' }),
-              ...(sort !== 'recent' && { sort }),
-            }).toString()}`}
-            prefetch={false}
-            className="rounded border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
-          >
-            Назад
-          </Link>
+            <Link
+              href={`?${new URLSearchParams({
+                ...(search && { q: search }),
+                page: String(page - 1),
+                ...(isTableView && { view: 'table' }),
+                ...(sort !== 'recent' && { sort }),
+              }).toString()}`}
+              prefetch={false}
+              className="rounded border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
+            >
+              {t('pagination.prev')}
+            </Link>
           )}
           <span className="text-sm text-slate-500">
-            {page} из {totalPages}
+            {page} {t('pagination.of')} {totalPages}
           </span>
           {page < totalPages && (
-          <Link
-            href={`?${new URLSearchParams({
-              ...(search && { q: search }),
-              page: String(page + 1),
-              ...(isTableView && { view: 'table' }),
-              ...(sort !== 'recent' && { sort }),
-            }).toString()}`}
-            prefetch={false}
-            className="rounded border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
-          >
-            Вперёд
-          </Link>
+            <Link
+              href={`?${new URLSearchParams({
+                ...(search && { q: search }),
+                page: String(page + 1),
+                ...(isTableView && { view: 'table' }),
+                ...(sort !== 'recent' && { sort }),
+              }).toString()}`}
+              prefetch={false}
+              className="rounded border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
+            >
+              {t('pagination.next')}
+            </Link>
           )}
         </nav>
       )}

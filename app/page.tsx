@@ -1,24 +1,23 @@
 import { auth, signIn } from '@/lib/auth'
 import { getRecentRecipes, getPopularRecipes } from '@/app/actions/recipes'
 import { PublicRecipeCard } from '@/app/components/PublicRecipeCard'
+import { getLocale, getT } from '@/lib/i18n'
 import { redirect } from 'next/navigation'
 
 export default async function Home() {
   const session = await auth()
-  
-  // Если пользователь авторизован, редиректим на dashboard
-  if (session?.user) {
-    redirect('/dashboard')
-  }
-  
-  const [recentRecipes, popularRecipes] = await Promise.all([
+
+  if (session?.user) redirect('/dashboard')
+
+  const [locale, recentRecipes, popularRecipes] = await Promise.all([
+    getLocale(),
     getRecentRecipes(20),
     getPopularRecipes(20),
   ])
+  const t = getT(locale)
 
   return (
     <div style={{ minHeight: '100%' }}>
-      {/* Hero-секция */}
       <section
         style={{
           background: '#3838D5',
@@ -29,12 +28,7 @@ export default async function Home() {
         }}
         className="md:py-16 md:px-6"
       >
-        <div
-          style={{
-            maxWidth: '800px',
-            margin: '0 auto',
-          }}
-        >
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <h1
             style={{
               fontSize: 'clamp(2rem, 5vw, 3rem)',
@@ -42,7 +36,7 @@ export default async function Home() {
               marginBottom: '1rem',
             }}
           >
-            Recipe Kitchen Share
+            {t('home.heroTitle')}
           </h1>
           <p
             style={{
@@ -51,51 +45,40 @@ export default async function Home() {
               opacity: 0.9,
             }}
           >
-            Делитесь своими рецептами и открывайте новые кулинарные идеи
+            {t('home.heroSubtitle')}
           </p>
-          {!session?.user && (
-            <form
-              action={async () => {
-                'use server'
-                await signIn('google', { callbackUrl: '/dashboard' })
+          <form
+            action={async () => {
+              'use server'
+              await signIn('google', { callbackUrl: '/dashboard' })
+            }}
+          >
+            <button
+              type="submit"
+              className="hero-button"
+              style={{
+                padding: '0.875rem 2rem',
+                fontSize: '1rem',
+                fontWeight: 600,
+                background: 'white',
+                color: '#667eea',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                transition: 'transform 0.2s',
               }}
             >
-              <button
-                type="submit"
-                className="hero-button"
-                style={{
-                  padding: '0.875rem 2rem',
-                  fontSize: '1rem',
-                  fontWeight: 600,
-                  background: 'white',
-                  color: '#667eea',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  transition: 'transform 0.2s',
-                }}
-              >
-                Войти через Google
-              </button>
-            </form>
-          )}
+              {t('home.loginGoogle')}
+            </button>
+          </form>
         </div>
       </section>
 
-      {/* Секция недавних рецептов */}
       <section
-        style={{
-          padding: '2rem 1rem',
-          background: '#f9fafb',
-        }}
+        style={{ padding: '2rem 1rem', background: '#f9fafb' }}
         className="md:py-12 md:px-6"
       >
-        <div
-          style={{
-            maxWidth: '1200px',
-            margin: '0 auto',
-          }}
-        >
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <h2
             style={{
               fontSize: 'clamp(1.5rem, 4vw, 2rem)',
@@ -104,7 +87,7 @@ export default async function Home() {
               color: '#1f2937',
             }}
           >
-            Недавние рецепты
+            {t('home.recentRecipes')}
           </h2>
           {recentRecipes.length > 0 ? (
             <div
@@ -121,26 +104,17 @@ export default async function Home() {
             </div>
           ) : (
             <p style={{ color: '#6b7280', fontSize: '1rem' }}>
-              Пока нет публичных рецептов
+              {t('home.noRecipes')}
             </p>
           )}
         </div>
       </section>
 
-      {/* Секция популярных рецептов */}
       <section
-        style={{
-          padding: '2rem 1rem',
-          background: 'white',
-        }}
+        style={{ padding: '2rem 1rem', background: 'white' }}
         className="md:py-12 md:px-6"
       >
-        <div
-          style={{
-            maxWidth: '1200px',
-            margin: '0 auto',
-          }}
-        >
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <h2
             style={{
               fontSize: 'clamp(1.5rem, 4vw, 2rem)',
@@ -149,7 +123,7 @@ export default async function Home() {
               color: '#1f2937',
             }}
           >
-            Популярные рецепты
+            {t('home.popularRecipes')}
           </h2>
           {popularRecipes.length > 0 ? (
             <div
@@ -166,7 +140,7 @@ export default async function Home() {
             </div>
           ) : (
             <p style={{ color: '#6b7280', fontSize: '1rem' }}>
-              Пока нет популярных рецептов
+              {t('home.noPopular')}
             </p>
           )}
         </div>

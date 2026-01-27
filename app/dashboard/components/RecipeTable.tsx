@@ -11,6 +11,7 @@ import { Button } from '@/app/components/ui/button'
 import { LikeButton } from './LikeButton'
 import { RecipeViewModal } from './RecipeViewModal'
 import { cn } from '@/lib/utils'
+import { useTranslations } from '@/app/components/LocaleProvider'
 
 type RecipeRow = {
   id: string
@@ -43,31 +44,32 @@ function formatDate(d: Date) {
 }
 
 export function RecipeTable({ recipes, currentUserId }: RecipeTableProps) {
+  const t = useTranslations()
   return (
     <div className="mt-6 overflow-x-auto rounded-xl border border-slate-200 bg-white">
       <table className="w-full text-left text-sm">
         <thead>
           <tr className="border-b border-slate-200 bg-slate-50/80">
             <th className="px-2 md:px-4 py-2 md:py-3 font-semibold uppercase tracking-wide text-slate-500 text-xs md:text-sm">
-              Заголовок
+              {t('table.title')}
             </th>
             <th className="hidden md:table-cell px-4 py-3 font-semibold uppercase tracking-wide text-slate-500">
-              Описание
+              {t('table.description')}
             </th>
             <th className="hidden lg:table-cell px-4 py-3 font-semibold uppercase tracking-wide text-slate-500">
-              Категория
+              {t('table.category')}
             </th>
             <th className="hidden lg:table-cell px-4 py-3 font-semibold uppercase tracking-wide text-slate-500">
-              Обновлено
+              {t('table.updated')}
             </th>
             <th className="px-2 md:px-4 py-2 md:py-3 font-semibold uppercase tracking-wide text-slate-500 text-xs md:text-sm">
-              Статус
+              {t('table.status')}
             </th>
             <th className="px-2 md:px-4 py-2 md:py-3 font-semibold uppercase tracking-wide text-slate-500 text-xs md:text-sm">
-              Нравится
+              {t('table.likes')}
             </th>
             <th className="px-2 md:px-4 py-2 md:py-3 font-semibold uppercase tracking-wide text-slate-500 text-xs md:text-sm">
-              Действия
+              {t('table.actions')}
             </th>
           </tr>
         </thead>
@@ -95,6 +97,7 @@ function RecipeTableRow({
   currentUserId: string
   showDelete: boolean
 }) {
+  const t = useTranslations()
   const [viewOpen, setViewOpen] = useState(false)
   const [openInEditMode, setOpenInEditMode] = useState(false)
   const [pending, startTransition] = useTransition()
@@ -105,7 +108,7 @@ function RecipeTableRow({
   const hasLiked = (r.likes?.length ?? 0) > 0
 
   const onDelete = () => {
-    if (!confirm('Удалить рецепт?')) return
+    if (!confirm(t('recipe.deleteConfirm'))) return
     startTransition(async () => { await deleteRecipe(r.id) })
   }
   const onTogglePublic = () => {
@@ -116,7 +119,7 @@ function RecipeTableRow({
   }
 
   const onDownload = () => {
-    const content = `${r.title}\n\n${r.content}\n\nКатегория: ${r.category?.category ?? '—'}\nОбновлено: ${formatDate(r.updatedAt)}\nСтатус: ${isPublic ? 'Публичный' : 'Приватный'}`
+    const content = `${r.title}\n\n${r.content}\n\n${t('recipe.categoryLabel')}: ${r.category?.category ?? '—'}\n${t('recipe.updated')}: ${formatDate(r.updatedAt)}\n${t('recipe.status')}: ${isPublic ? t('recipe.public') : t('recipe.private')}`
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
@@ -143,8 +146,8 @@ function RecipeTableRow({
             onClick={onToggleFavorite}
             disabled={pending}
             className={cn('shrink-0', isFav ? 'text-amber-500' : 'text-slate-400')}
-            aria-label={isFav ? 'Убрать из избранного' : 'В избранное'}
-            title={isFav ? 'Убрать из избранного' : 'Добавить в избранное'}
+            aria-label={isFav ? t('recipe.unfav') : t('recipe.fav')}
+            title={isFav ? t('recipe.unfav') : t('recipe.fav')}
           >
             <Star className={cn('h-4 w-4', isFav && 'fill-current')} />
           </Button>
@@ -152,14 +155,14 @@ function RecipeTableRow({
             type="button"
             onClick={() => { setOpenInEditMode(false); setViewOpen(true) }}
             className="text-left font-medium text-sm md:text-base text-slate-900 cursor-pointer hover:underline hover:text-sky-600"
-            title="Открыть рецепт"
+            title={t('recipe.openRecipe')}
           >
             {r.title}
           </button>
         </div>
         <div className="mt-1 md:hidden text-xs text-slate-500">
-          {r.category?.category && <span className="mr-2">Категория: {r.category.category}</span>}
-          <span>Обновлено: {formatDate(r.updatedAt)}</span>
+          {r.category?.category && <span className="mr-2">{t('recipe.categoryLabel')}: {r.category.category}</span>}
+          <span>{t('recipe.updated')}: {formatDate(r.updatedAt)}</span>
         </div>
         <RecipeViewModal
           recipe={{
@@ -191,7 +194,7 @@ function RecipeTableRow({
             isPublic ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-600'
           )}
         >
-          {isPublic ? 'Публичный' : 'Приватный'}
+          {isPublic ? t('recipe.public') : t('recipe.private')}
         </span>
       </td>
       <td className="px-2 md:px-4 py-2 md:py-3">
@@ -211,8 +214,8 @@ function RecipeTableRow({
             variant="ghost"
             size="icon-sm"
             onClick={onDownload}
-            aria-label="Скачать рецепт"
-            title="Скачать рецепт"
+            aria-label={t('recipe.download')}
+            title={t('recipe.download')}
           >
             <Download className="h-4 w-4 text-slate-500" />
           </Button>
@@ -222,8 +225,8 @@ function RecipeTableRow({
               size="icon-sm"
               onClick={onTogglePublic}
               disabled={pending}
-              aria-label={isPublic ? 'Сделать приватным' : 'Опубликовать'}
-              title={isPublic ? 'Сделать приватным' : 'Опубликовать (видят все)'}
+              aria-label={isPublic ? t('recipe.makePrivate') : t('recipe.publish')}
+              title={isPublic ? t('recipe.makePrivate') : t('recipe.publishTitle')}
             >
               {isPublic ? (
                 <Globe className="h-4 w-4 text-slate-500" />
@@ -237,8 +240,8 @@ function RecipeTableRow({
               variant="ghost"
               size="icon-sm"
               onClick={() => { setOpenInEditMode(true); setViewOpen(true) }}
-              aria-label="Редактировать"
-              title="Редактировать рецепт"
+              aria-label={t('recipe.editShort')}
+              title={t('recipe.edit')}
             >
               <Pencil className="h-4 w-4 text-slate-500" />
             </Button>
@@ -250,8 +253,8 @@ function RecipeTableRow({
               onClick={onDelete}
               disabled={pending}
               className="text-red-500 hover:bg-red-50 hover:text-red-600"
-              aria-label="Удалить"
-              title="Удалить рецепт"
+              aria-label={t('recipe.delete')}
+              title={t('recipe.deleteTitle')}
             >
               <Trash2 className="h-4 w-4" />
             </Button>

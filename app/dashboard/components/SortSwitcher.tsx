@@ -4,10 +4,12 @@ import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { Flame, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslations } from '@/app/components/LocaleProvider'
 
 type SortMode = 'popular' | 'recent'
 
 export function SortSwitcher() {
+  const t = useTranslations()
   const pathname = usePathname() ?? ''
   const searchParams = useSearchParams()
   const current = (searchParams.get('sort') || 'recent') as SortMode
@@ -25,12 +27,12 @@ export function SortSwitcher() {
     <div
       className="inline-flex rounded-lg border border-slate-200 bg-slate-50/80 p-0.5"
       role="group"
-      aria-label="Сортировка"
+      aria-label={t('sort.label')}
     >
       <Link
         href={href('popular')}
         prefetch={false}
-        title="По популярности"
+        title={t('sort.popularTitle')}
         className={cn(
           'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors',
           isPopular
@@ -39,12 +41,12 @@ export function SortSwitcher() {
         )}
       >
         <Flame className="h-4 w-4" />
-        Популярные
+        {t('sort.popular')}
       </Link>
       <Link
         href={href('recent')}
         prefetch={false}
-        title="Сначала новые"
+        title={t('sort.recentTitle')}
         className={cn(
           'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors',
           !isPopular
@@ -53,7 +55,7 @@ export function SortSwitcher() {
         )}
       >
         <Clock className="h-4 w-4" />
-        Новые
+        {t('sort.recent')}
       </Link>
     </div>
   )

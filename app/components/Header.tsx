@@ -1,8 +1,13 @@
 import { auth, signIn, signOut } from '@/lib/auth'
+import type { Locale } from '@/lib/i18n'
 import Link from 'next/link'
-import { HeaderCabinetLink } from './HeaderNav'
+import { LangSwitcher } from './LangSwitcher'
 
-export async function Header() {
+type T = (key: string) => string
+
+type Props = { locale: Locale; t: T }
+
+export async function Header({ locale, t }: Props) {
   const session = await auth()
 
   return (
@@ -36,6 +41,7 @@ export async function Header() {
           Recipe-Kitchen-Share
         </Link>
         <nav style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <LangSwitcher locale={locale} />
           {session?.user ? (
             <>
               <span
@@ -62,7 +68,7 @@ export async function Header() {
                     cursor: 'pointer',
                   }}
                 >
-                  Выход
+                  {t('header.logout')}
                 </button>
               </form>
             </>
@@ -85,7 +91,7 @@ export async function Header() {
                   cursor: 'pointer',
                 }}
               >
-                Вход
+                {t('header.login')}
               </button>
             </form>
           )}

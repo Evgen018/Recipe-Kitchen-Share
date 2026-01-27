@@ -11,12 +11,12 @@ export async function POST(
   try {
     const session = await auth()
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'errors.authRequired' }, { status: 401 })
     }
 
     const { id: recipeId } = await params
     if (!recipeId) {
-      return NextResponse.json({ error: 'not_found' }, { status: 404 })
+      return NextResponse.json({ error: 'errors.notFound' }, { status: 404 })
     }
 
     const recipe = await prisma.recipe.findUnique({
@@ -24,7 +24,7 @@ export async function POST(
       select: { id: true, visibility: true },
     })
     if (!recipe || recipe.visibility !== 'PUBLIC') {
-      return NextResponse.json({ error: 'not_found' }, { status: 404 })
+      return NextResponse.json({ error: 'errors.notFound' }, { status: 404 })
     }
 
     const existing = await prisma.like.findUnique({
@@ -52,7 +52,7 @@ export async function POST(
     return NextResponse.json({ liked, likesCount })
   } catch {
     return NextResponse.json(
-      { error: 'Попробуйте позже' },
+      { error: 'errors.tryLater' },
       { status: 500 }
     )
   }

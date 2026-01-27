@@ -13,6 +13,7 @@ import {
 import { Button } from '@/app/components/ui/button'
 import { Input } from '@/app/components/ui/input'
 import { Label } from '@/app/components/ui/label'
+import { useTranslations } from '@/app/components/LocaleProvider'
 
 export function AddCategoryDialog({
   disabled,
@@ -21,6 +22,7 @@ export function AddCategoryDialog({
   disabled?: boolean
   trigger: React.ReactNode
 }) {
+  const t = useTranslations()
   const [open, setOpen] = useState(false)
   const router = useRouter()
 
@@ -31,7 +33,7 @@ export function AddCategoryDialog({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Добавить категорию</DialogTitle>
+          <DialogTitle>{t('categories.add')}</DialogTitle>
         </DialogHeader>
         <form
           className="grid gap-4"
@@ -43,24 +45,24 @@ export function AddCategoryDialog({
               setOpen(false)
               router.refresh()
             } else if (res?.error) {
-              alert(res.error)
+              alert(t(res.error))
             }
           }}
         >
           <div className="grid gap-2">
-            <Label htmlFor="cat-name">Название</Label>
+            <Label htmlFor="cat-name">{t('categories.nameLabel')}</Label>
             <Input
               id="cat-name"
               name="name"
               required
-              placeholder="Например: Закуски"
+              placeholder={t('categories.namePlaceholder')}
             />
           </div>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              Отмена
+              {t('common.cancel')}
             </Button>
-            <Button type="submit">Добавить</Button>
+            <Button type="submit">{t('categories.addButton')}</Button>
           </div>
         </form>
       </DialogContent>

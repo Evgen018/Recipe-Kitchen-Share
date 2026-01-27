@@ -5,15 +5,16 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Globe, History, MessageSquare, Settings, Star, Tags, User, X, Menu } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslations } from '@/app/components/LocaleProvider'
 
 const nav = [
-  { href: '/dashboard/profile', label: 'Профиль', icon: User },
-  { href: '/dashboard/categories', label: 'Категории', icon: Tags },
-  { href: '/dashboard', label: 'Мои рецепты', icon: MessageSquare },
-  { href: '/dashboard/public', label: 'Публичные рецепты', icon: Globe },
-  { href: '/dashboard/favorites', label: 'Избранное', icon: Star },
-  { href: '/dashboard/history', label: 'История', icon: History },
-  { href: '/dashboard/settings', label: 'Настройки', icon: Settings },
+  { href: '/dashboard/profile', key: 'profile', icon: User },
+  { href: '/dashboard/categories', key: 'categories', icon: Tags },
+  { href: '/dashboard', key: 'myRecipes', icon: MessageSquare },
+  { href: '/dashboard/public', key: 'public', icon: Globe },
+  { href: '/dashboard/favorites', key: 'favorites', icon: Star },
+  { href: '/dashboard/history', key: 'history', icon: History },
+  { href: '/dashboard/settings', key: 'settings', icon: Settings },
 ] as const
 
 interface DashboardSidebarProps {
@@ -21,9 +22,10 @@ interface DashboardSidebarProps {
 }
 
 export function DashboardSidebar({ user }: DashboardSidebarProps) {
+  const t = useTranslations()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const currentPath = usePathname() ?? ''
-  const name = user.name || user.email || 'Пользователь'
+  const name = user.name || user.email || t('sidebar.user')
   const shortName = name.includes(' ') ? name.split(' ').map((n) => n[0]).join('').slice(0, 2) : name.slice(0, 2)
 
   const sidebarContent = (
@@ -42,7 +44,7 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
         </div>
       </div>
       <nav className="space-y-0.5 px-2 pb-4">
-        {nav.map(({ href, label, icon: Icon }) => {
+        {nav.map(({ href, key, icon: Icon }) => {
           const isActive = currentPath === href || (href !== '/dashboard' && currentPath.startsWith(href))
           return (
             <Link
@@ -57,7 +59,7 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
               )}
             >
               <Icon className="h-5 w-5 shrink-0" />
-              {label}
+              {t(`sidebar.${key}`)}
             </Link>
           )
         })}
@@ -71,7 +73,7 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
       <button
         onClick={() => setMobileMenuOpen(true)}
         className="fixed left-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-lg bg-white border border-slate-200 shadow-md md:hidden"
-        aria-label="Открыть меню"
+        aria-label={t('sidebar.openMenu')}
       >
         <Menu className="h-5 w-5 text-slate-700" />
       </button>
@@ -104,11 +106,11 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
         )}
       >
         <div className="flex items-center justify-between p-4 border-b border-slate-200">
-          <span className="text-sm font-semibold text-slate-800">Меню</span>
+          <span className="text-sm font-semibold text-slate-800">{t('sidebar.menu')}</span>
           <button
             onClick={() => setMobileMenuOpen(false)}
             className="flex h-8 w-8 items-center justify-center rounded-lg hover:bg-slate-100"
-            aria-label="Закрыть меню"
+            aria-label={t('sidebar.closeMenu')}
           >
             <X className="h-5 w-5 text-slate-600" />
           </button>

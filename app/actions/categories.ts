@@ -9,7 +9,7 @@ const MAX_CATEGORIES = 20
 const DEFAULT_NAMES = ['Напитки', 'Еда', 'Десерт']
 
 const createCategorySchema = z.object({
-  name: z.string().min(1, 'Введите название').max(100, 'Слишком длинное название'),
+  name: z.string().min(1, 'validation.nameRequired').max(100, 'validation.nameTooLong'),
 })
 
 async function ensureDefaults() {
@@ -35,24 +35,21 @@ export async function listCategories() {
 /** Добавить категорию. Не более 20 всего. */
 export async function createCategory(formData: FormData) {
   const session = await auth()
-  if (!session?.user?.id) return { error: 'Необходима авторизация' }
+  if (!session?.user?.id) return { error: 'errors.authRequired' }
 
   const raw = formData.get('name')
   const parsed = createCategorySchema.safeParse({ name: typeof raw === 'string' ? raw.trim() : '' })
   if (!parsed.success) {
-    return { error: parsed.error.flatten().fieldErrors.name?.[0] ?? 'Ошибка валидации' }
+    const key = parsed.error.flatten().fieldErrors.name?.[0]
+    return { error: typeof key === 'string' ? key : 'validation.error' }
   }
 
   const name = parsed.data.name
   const total = await prisma.category.count()
-  if (total >= MAX_CATEGORIES) {
-    return { error: `Достигнут лимит: не более ${MAX_CATEGORIES} категорий` }
-  }
+  if (total >= MAX_CATEGORIES) return { error: 'errors.categoryLimit' }
 
   const existing = await prisma.category.findFirst({ where: { category: name } })
-  if (existing) {
-    return { error: 'Категория с таким названием уже есть' }
-  }
+  if (existing) return { error: 'errors.categoryExists' }
 
   await prisma.category.create({ data: { category: name } })
   revalidatePath('/dashboard/categories')

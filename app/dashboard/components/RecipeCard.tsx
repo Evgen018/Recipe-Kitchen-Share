@@ -11,6 +11,7 @@ import { Button } from '@/app/components/ui/button'
 import { LikeButton } from './LikeButton'
 import { RecipeViewModal } from './RecipeViewModal'
 import { cn } from '@/lib/utils'
+import { useTranslations } from '@/app/components/LocaleProvider'
 
 type Recipe = {
   id: string
@@ -39,6 +40,7 @@ function preview(text: string, max = 120) {
 }
 
 export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCardProps) {
+  const t = useTranslations()
   const [viewOpen, setViewOpen] = useState(false)
   const [openInEditMode, setOpenInEditMode] = useState(false)
   const [pending, startTransition] = useTransition()
@@ -49,7 +51,7 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
   const hasLiked = (recipe.likes?.length ?? 0) > 0
 
   const onDelete = () => {
-    if (!confirm('Удалить рецепт?')) return
+    if (!confirm(t('recipe.deleteConfirm'))) return
     startTransition(async () => {
       await deleteRecipe(recipe.id)
     })
@@ -72,7 +74,7 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
       if (!d) return '—'
       return new Date(d).toLocaleDateString('ru-RU')
     }
-    const content = `${recipe.title}\n\n${recipe.content}\n\nКатегория: ${recipe.category?.category ?? '—'}\nОбновлено: ${formatDate(recipe.updatedAt)}\nСтатус: ${isPublic ? 'Публичный' : 'Приватный'}`
+    const content = `${recipe.title}\n\n${recipe.content}\n\n${t('recipe.categoryLabel')}: ${recipe.category?.category ?? '—'}\n${t('recipe.updated')}: ${formatDate(recipe.updatedAt)}\n${t('recipe.status')}: ${isPublic ? t('recipe.public') : t('recipe.private')}`
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
@@ -101,8 +103,8 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
             onClick={onToggleFavorite}
             disabled={pending}
             className={cn('shrink-0', isFav ? 'text-amber-500' : 'text-slate-400')}
-            aria-label={isFav ? 'Убрать из избранного' : 'В избранное'}
-            title={isFav ? 'Убрать из избранного' : 'Добавить в избранное'}
+            aria-label={isFav ? t('recipe.unfav') : t('recipe.fav')}
+            title={isFav ? t('recipe.unfav') : t('recipe.fav')}
           >
             <Star className={cn('h-4 w-4', isFav && 'fill-current')} />
           </Button>
@@ -111,7 +113,7 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
               type="button"
               onClick={() => { setOpenInEditMode(false); setViewOpen(true) }}
               className="text-left font-semibold text-slate-900 cursor-pointer hover:underline hover:text-sky-600"
-              title="Открыть рецепт"
+              title={t('recipe.openRecipe')}
             >
               {recipe.title}
             </button>
@@ -123,7 +125,7 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
         {recipe.category?.category && (
           <span
             className="shrink-0 rounded-md bg-sky-50 px-2.5 py-1 text-sm font-medium text-sky-700"
-            title="Категория"
+            title={t('recipe.categoryLabel')}
           >
             {recipe.category.category}
           </span>
@@ -141,8 +143,8 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
           variant="ghost"
           size="icon-sm"
           onClick={onDownload}
-          aria-label="Скачать рецепт"
-          title="Скачать рецепт"
+          aria-label={t('recipe.download')}
+          title={t('recipe.download')}
         >
           <Download className="h-4 w-4 text-slate-500" />
         </Button>
@@ -152,8 +154,8 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
             size="icon-sm"
             onClick={onTogglePublic}
             disabled={pending}
-            aria-label={isPublic ? 'Сделать приватным' : 'Опубликовать'}
-            title={isPublic ? 'Сделать приватным' : 'Опубликовать (видят все)'}
+            aria-label={isPublic ? t('recipe.makePrivate') : t('recipe.publish')}
+            title={isPublic ? t('recipe.makePrivate') : t('recipe.publishTitle')}
           >
             {isPublic ? (
               <Globe className="h-4 w-4 text-slate-500" />
@@ -167,8 +169,8 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
             variant="ghost"
             size="icon-sm"
             onClick={() => { setOpenInEditMode(true); setViewOpen(true) }}
-            aria-label="Редактировать"
-            title="Редактировать рецепт"
+            aria-label={t('recipe.editShort')}
+            title={t('recipe.edit')}
           >
             <Pencil className="h-4 w-4 text-slate-500" />
           </Button>
@@ -180,8 +182,8 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
             onClick={onDelete}
             disabled={pending}
             className="text-red-500 hover:bg-red-50 hover:text-red-600"
-            aria-label="Удалить"
-            title="Удалить рецепт"
+            aria-label={t('recipe.delete')}
+            title={t('recipe.deleteTitle')}
           >
             <Trash2 className="h-4 w-4" />
           </Button>
