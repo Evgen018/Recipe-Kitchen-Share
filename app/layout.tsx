@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { Header } from './components/Header'
+import { Footer } from './components/Footer'
 
 export const metadata: Metadata = {
   title: 'Recipe Kitchen Share',
@@ -14,9 +15,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ru">
-      <body>
+      <body style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Header />
-        {children}
+        <main style={{ flex: 1 }}>
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   )

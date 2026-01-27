@@ -1,4 +1,4 @@
-import { auth, signOut } from '@/lib/auth'
+import { auth, signIn, signOut } from '@/lib/auth'
 import Link from 'next/link'
 import { HeaderCabinetLink } from './HeaderNav'
 
@@ -35,22 +35,75 @@ export async function Header() {
         >
           Recipe-Kitchen-Share
         </Link>
-        {session?.user && (
-          <nav style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <span
-              style={{
-                fontSize: '0.9rem',
-                color: '#555',
-              }}
-              title={session.user.email ?? ''}
-            >
-              {session.user.name || session.user.email}
-            </span>
-            <HeaderCabinetLink />
+        <nav style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+          {session?.user ? (
+            <>
+              <Link
+                href="/"
+                style={{
+                  fontSize: '0.9rem',
+                  color: '#555',
+                  textDecoration: 'none',
+                }}
+              >
+                Главная
+              </Link>
+              <Link
+                href="/dashboard/profile"
+                style={{
+                  fontSize: '0.9rem',
+                  color: '#555',
+                  textDecoration: 'none',
+                }}
+              >
+                Профиль
+              </Link>
+              <Link
+                href="/dashboard"
+                style={{
+                  fontSize: '0.9rem',
+                  color: '#555',
+                  textDecoration: 'none',
+                }}
+              >
+                Мои рецепты
+              </Link>
+              <span
+                style={{
+                  fontSize: '0.9rem',
+                  color: '#555',
+                }}
+                title={session.user.email ?? ''}
+              >
+                {session.user.name || session.user.email}
+              </span>
+              <form
+                action={async () => {
+                  'use server'
+                  await signOut({ redirectTo: '/' })
+                }}
+              >
+                <button
+                  type="submit"
+                  style={{
+                    padding: '0.4rem 0.9rem',
+                    fontSize: '0.9rem',
+                    background: '#ef4444',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Выход
+                </button>
+              </form>
+            </>
+          ) : (
             <form
               action={async () => {
                 'use server'
-                await signOut({ redirectTo: '/' })
+                await signIn('google', { callbackUrl: '/dashboard' })
               }}
             >
               <button
@@ -58,18 +111,18 @@ export async function Header() {
                 style={{
                   padding: '0.4rem 0.9rem',
                   fontSize: '0.9rem',
-                  background: '#ef4444',
+                  background: '#667eea',
                   color: 'white',
                   border: 'none',
                   borderRadius: '6px',
                   cursor: 'pointer',
                 }}
               >
-                Выход
+                Вход
               </button>
             </form>
-          </nav>
-        )}
+          )}
+        </nav>
       </div>
     </header>
   )

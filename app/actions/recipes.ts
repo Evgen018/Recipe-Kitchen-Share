@@ -155,3 +155,97 @@ export async function toggleFavorite(recipeId: string) {
   return { ok: true }
 }
 
+/** Получить недавние публичные рецепты */
+export async function getRecentRecipes(limit: number = 20) {
+  const session = await auth()
+  const userId = session?.user?.id
+
+  const recipes = await prisma.recipe.findMany({
+    where: {
+      visibility: RecipeVisibility.PUBLIC,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    take: limit,
+    include: {
+      _count: {
+        select: {
+          likes: true,
+        },
+      },
+      ...(userId
+        ? {
+            likes: {
+              where: {
+                userId,
+              },
+              select: {
+                id: true,
+              },
+            },
+          }
+        : {}),
+      tags: {
+        include: {
+          tag: true,
+        },
+      },
+    },
+  })
+
+  return recipes.map((recipe) => ({
+    ...recipe,
+    likesCount: recipe._count.likes,
+    likedByMe: userId ? recipe.likes.length > 0 : false,
+  }))
+}
+
+/** Получить популярные публичные рецепты (по количеству лайков) */
+export async function getPopularRecipes(limit: number = 20) {
+  const session = await auth()
+  const userId = session?.user?.id
+
+  // Сначала получаем все публичные рецепты с подсчетом лайков
+  const recipes = await prisma.recipe.findMany({
+    where: {
+      visibility: RecipeVisibility.PUBLIC,
+    },
+    include: {
+      _count: {
+        select: {
+          likes: true,
+        },
+      },
+      ...(userId
+        ? {
+            likes: {
+              where: {
+                userId,
+              },
+              select: {
+                id: true,
+              },
+            },
+          }
+        : {}),
+      tags: {
+        include: {
+          tag: true,
+        },
+      },
+    },
+  })
+
+  // Сортируем по количеству лайков и берем топ
+  const sortedRecipes = recipes
+    .sort((a, b) => b._count.likes - a._count.likes)
+    .slice(0, limit)
+
+  return sortedRecipes.map((recipe) => ({
+    ...recipe,
+    likesCount: recipe._count.likes,
+    likedByMe: userId ? recipe.likes.length > 0 : false,
+  }))
+}
+
