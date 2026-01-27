@@ -93,31 +93,38 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
         pending && 'opacity-70'
       )}
     >
-      <div className="flex items-start gap-2">
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          onClick={onToggleFavorite}
-          disabled={pending}
-          className={cn('shrink-0', isFav ? 'text-amber-500' : 'text-slate-400')}
-          aria-label={isFav ? 'Убрать из избранного' : 'В избранное'}
-          title={isFav ? 'Убрать из избранного' : 'Добавить в избранное'}
-        >
-          <Star className={cn('h-4 w-4', isFav && 'fill-current')} />
-        </Button>
-        <div className="min-w-0 flex-1">
-          <button
-            type="button"
-            onClick={() => { setOpenInEditMode(false); setViewOpen(true) }}
-            className="text-left font-semibold text-slate-900 cursor-pointer hover:underline hover:text-sky-600"
-            title="Открыть рецепт"
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex min-w-0 flex-1 items-start gap-2">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={onToggleFavorite}
+            disabled={pending}
+            className={cn('shrink-0', isFav ? 'text-amber-500' : 'text-slate-400')}
+            aria-label={isFav ? 'Убрать из избранного' : 'В избранное'}
+            title={isFav ? 'Убрать из избранного' : 'Добавить в избранное'}
           >
-            {recipe.title}
-          </button>
-          <p className="mt-0.5 line-clamp-2 text-sm text-slate-500">
-            {preview(recipe.content)}
-          </p>
+            <Star className={cn('h-4 w-4', isFav && 'fill-current')} />
+          </Button>
+          <div className="min-w-0 flex-1">
+            <button
+              type="button"
+              onClick={() => { setOpenInEditMode(false); setViewOpen(true) }}
+              className="text-left font-semibold text-slate-900 cursor-pointer hover:underline hover:text-sky-600"
+              title="Открыть рецепт"
+            >
+              {recipe.title}
+            </button>
+            <p className="mt-0.5 line-clamp-2 text-sm text-slate-500">
+              {preview(recipe.content)}
+            </p>
+          </div>
         </div>
+        {recipe.category?.category && (
+          <span className="shrink-0 rounded-md bg-sky-50 px-2.5 py-1 text-sm font-medium text-sky-700">
+            {recipe.category.category}
+          </span>
+        )}
       </div>
       <div className="flex flex-wrap items-center justify-end gap-1">
         {isPublic && (

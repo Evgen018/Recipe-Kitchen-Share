@@ -18,6 +18,7 @@ type RecipeRow = {
   content: string
   visibility: string
   ownerId: string
+  categoryId?: string
   updatedAt: Date
   favoritedBy?: { userId: string }[]
   likes?: { id: string }[]
@@ -166,6 +167,7 @@ function RecipeTableRow({
             title: r.title,
             content: r.content,
             visibility: r.visibility,
+            categoryId: r.categoryId,
           }}
           isOwner={isOwner}
           open={viewOpen}

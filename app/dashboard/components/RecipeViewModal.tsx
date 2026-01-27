@@ -45,6 +45,7 @@ export function RecipeViewModal({
 }: RecipeViewModalProps) {
   const [mode, setMode] = useState<'view' | 'edit'>(initialMode)
   const [categories, setCategories] = useState<Array<{ id: string; category: string }>>([])
+  const [categoryId, setCategoryId] = useState(recipe.categoryId ?? '')
   const router = useRouter()
 
   useEffect(() => {
@@ -53,10 +54,16 @@ export function RecipeViewModal({
   }, [open, initialMode])
 
   useEffect(() => {
-    if (open && mode === 'edit') {
+    if (open) {
       getAvailableCategories().then(setCategories)
     }
-  }, [open, mode])
+  }, [open])
+
+  useEffect(() => {
+    if (open && mode === 'edit') {
+      setCategoryId(recipe.categoryId ?? '')
+    }
+  }, [open, mode, recipe.id, recipe.categoryId])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -94,6 +101,7 @@ export function RecipeViewModal({
           </div>
         ) : (
           <form
+            key={`edit-${recipe.id}`}
             className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto"
             onSubmit={async (e) => {
               e.preventDefault()
@@ -122,7 +130,8 @@ export function RecipeViewModal({
                 id="v-categoryId"
                 name="categoryId"
                 required
-                defaultValue={recipe.categoryId || ''}
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
                 className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <option value="">Выберите категорию</option>
