@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 
 /** POST /api/recipes/[id]/like — toggle лайк. Только публичные рецепты. */
 export async function POST(
@@ -47,6 +47,7 @@ export async function POST(
     revalidatePath('/dashboard')
     revalidatePath('/dashboard/public')
     revalidatePath('/dashboard/favorites')
+    revalidateTag('dashboard-public')
 
     return NextResponse.json({ liked, likesCount })
   } catch {

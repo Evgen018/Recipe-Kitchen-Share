@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { auth } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
+import { getCachedPublicRecipes } from './fetchPublicRecipes'
 import { RecipeCard } from '../components/RecipeCard'
 import { RecipeTable } from '../components/RecipeTable'
 import { SearchRecipes } from '../components/SearchRecipes'
@@ -22,43 +22,14 @@ export default async function DashboardPublicPage({
   const page = Math.max(1, parseInt(String(pageStr), 10) || 1)
   const search = (q || '').trim()
   const isTableView = view === 'table'
-  const orderByPopular = sort === 'popular'
+  const sortMode = sort === 'popular' ? 'popular' : 'recent'
 
-  const where = {
-    visibility: 'PUBLIC' as const,
-    ...(search
-      ? {
-          OR: [
-            { title: { contains: search, mode: 'insensitive' as const } },
-            { content: { contains: search, mode: 'insensitive' as const } },
-          ],
-        }
-      : {}),
-  }
-
-  const [recipes, total] = await Promise.all([
-    prisma.recipe.findMany({
-      where,
-      orderBy: orderByPopular
-        ? [{ likes: { _count: 'desc' } }, { createdAt: 'desc' }]
-        : { createdAt: 'desc' },
-      skip: (page - 1) * PAGE_SIZE,
-      take: PAGE_SIZE,
-      include: {
-        favoritedBy: {
-          where: { userId: session.user.id },
-          select: { userId: true },
-        },
-        likes: {
-          where: { userId: session.user.id },
-          select: { id: true },
-        },
-        category: { select: { category: true } },
-        _count: { select: { likes: true } },
-      },
-    }),
-    prisma.recipe.count({ where }),
-  ])
+  const { recipes, total } = await getCachedPublicRecipes(
+    session.user.id,
+    page,
+    search,
+    sortMode
+  )
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
@@ -119,10 +90,11 @@ export default async function DashboardPublicPage({
               ...(isTableView && { view: 'table' }),
               ...(sort !== 'recent' && { sort }),
             }).toString()}`}
-              className="rounded border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
-            >
-              Назад
-            </Link>
+            prefetch={false}
+            className="rounded border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
+          >
+            Назад
+          </Link>
           )}
           <span className="text-sm text-slate-500">
             {page} из {totalPages}
@@ -135,10 +107,11 @@ export default async function DashboardPublicPage({
               ...(isTableView && { view: 'table' }),
               ...(sort !== 'recent' && { sort }),
             }).toString()}`}
-              className="rounded border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
-            >
-              Вперёд
-            </Link>
+            prefetch={false}
+            className="rounded border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
+          >
+            Вперёд
+          </Link>
           )}
         </nav>
       )}

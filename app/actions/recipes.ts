@@ -3,7 +3,7 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { RecipeVisibility } from '../../prisma/generated/prisma/client'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { z } from 'zod'
 
 const recipeSchema = z.object({
@@ -59,6 +59,7 @@ export async function createRecipe(formData: FormData) {
   })
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/public')
+  revalidateTag('dashboard-public')
   return { ok: true }
 }
 
@@ -94,6 +95,7 @@ export async function updateRecipe(recipeId: string, formData: FormData) {
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/public')
   revalidatePath('/dashboard/favorites')
+  revalidateTag('dashboard-public')
   return { ok: true }
 }
 
@@ -110,6 +112,7 @@ export async function deleteRecipe(recipeId: string) {
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/public')
   revalidatePath('/dashboard/favorites')
+  revalidateTag('dashboard-public')
   return { ok: true }
 }
 
@@ -132,6 +135,7 @@ export async function togglePublic(recipeId: string) {
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/public')
   revalidatePath('/dashboard/favorites')
+  revalidateTag('dashboard-public')
   return { ok: true }
 }
 
@@ -165,6 +169,7 @@ export async function toggleFavorite(recipeId: string) {
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/public')
   revalidatePath('/dashboard/favorites')
+  revalidateTag('dashboard-public')
   return { ok: true }
 }
 

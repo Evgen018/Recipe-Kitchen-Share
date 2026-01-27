@@ -29,6 +29,7 @@ export function ViewToggle() {
     >
       <Link
         href={href('cards')}
+        prefetch={false}
         title="Показать карточками"
         className={cn(
           'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors',
@@ -42,6 +43,7 @@ export function ViewToggle() {
       </Link>
       <Link
         href={href('table')}
+        prefetch={false}
         title="Показать таблицей"
         className={cn(
           'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors',
