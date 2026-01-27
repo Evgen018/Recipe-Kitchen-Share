@@ -38,26 +38,6 @@ export async function Header() {
         <nav style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
           {session?.user ? (
             <>
-              <Link
-                href="/dashboard/profile"
-                style={{
-                  fontSize: '0.875rem',
-                  color: '#555',
-                  textDecoration: 'none',
-                }}
-              >
-                Профиль
-              </Link>
-              <Link
-                href="/dashboard"
-                style={{
-                  fontSize: '0.875rem',
-                  color: '#555',
-                  textDecoration: 'none',
-                }}
-              >
-                Мои рецепты
-              </Link>
               <span
                 className="hidden sm:inline text-sm text-slate-600"
                 title={session.user.email ?? ''}
