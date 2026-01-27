@@ -64,17 +64,17 @@ export default async function DashboardPage({
 
   return (
     <>
-      <h1 className="text-2xl font-semibold text-slate-900">Личный кабинет</h1>
-      <h2 className="mt-1 text-lg text-slate-600">Мои рецепты</h2>
+      <h1 className="text-xl md:text-2xl font-semibold text-slate-900">Личный кабинет</h1>
+      <h2 className="mt-1 text-base md:text-lg text-slate-600">Мои рецепты</h2>
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
-          <Suspense fallback={<div className="h-10 w-64 animate-pulse rounded-md bg-slate-100" />}>
-            <SearchRecipes className="w-64 min-w-0" />
+      <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex min-w-0 flex-1 flex-col sm:flex-row sm:items-center gap-3">
+          <Suspense fallback={<div className="h-10 w-full sm:w-64 animate-pulse rounded-md bg-slate-100" />}>
+            <SearchRecipes className="w-full sm:w-64 min-w-0" />
           </Suspense>
-          <RecipeDialog recipe={null} trigger={<Button className="bg-sky-500 text-white hover:bg-sky-600 focus-visible:ring-sky-400">+ Новый рецепт</Button>} />
+          <RecipeDialog recipe={null} trigger={<Button className="bg-sky-500 text-white hover:bg-sky-600 focus-visible:ring-sky-400 w-full sm:w-auto">+ Новый рецепт</Button>} />
         </div>
-        <Suspense fallback={<div className="h-9 w-[180px] animate-pulse rounded-lg bg-slate-100" />}>
+        <Suspense fallback={<div className="h-9 w-full sm:w-[180px] animate-pulse rounded-lg bg-slate-100" />}>
           <ViewToggle />
         </Suspense>
       </div>

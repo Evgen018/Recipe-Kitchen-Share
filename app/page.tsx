@@ -24,9 +24,10 @@ export default async function Home() {
           background: '#3838D5',
           backgroundImage: 'radial-gradient(circle, rgba(56, 56, 213, 0.96) 14%, rgba(15, 158, 166, 1) 100%)',
           color: 'white',
-          padding: '4rem 1.5rem',
+          padding: '3rem 1rem',
           textAlign: 'center',
         }}
+        className="md:py-16 md:px-6"
       >
         <div
           style={{
@@ -84,9 +85,10 @@ export default async function Home() {
       {/* Секция недавних рецептов */}
       <section
         style={{
-          padding: '3rem 1.5rem',
+          padding: '2rem 1rem',
           background: '#f9fafb',
         }}
+        className="md:py-12 md:px-6"
       >
         <div
           style={{
@@ -96,9 +98,9 @@ export default async function Home() {
         >
           <h2
             style={{
-              fontSize: '2rem',
+              fontSize: 'clamp(1.5rem, 4vw, 2rem)',
               fontWeight: 700,
-              marginBottom: '2rem',
+              marginBottom: '1.5rem',
               color: '#1f2937',
             }}
           >
@@ -108,9 +110,10 @@ export default async function Home() {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                gap: '1.5rem',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                gap: '1rem',
               }}
+              className="md:gap-6"
             >
               {recentRecipes.map((recipe) => (
                 <PublicRecipeCard key={recipe.id} recipe={recipe} />
@@ -127,9 +130,10 @@ export default async function Home() {
       {/* Секция популярных рецептов */}
       <section
         style={{
-          padding: '3rem 1.5rem',
+          padding: '2rem 1rem',
           background: 'white',
         }}
+        className="md:py-12 md:px-6"
       >
         <div
           style={{
@@ -139,9 +143,9 @@ export default async function Home() {
         >
           <h2
             style={{
-              fontSize: '2rem',
+              fontSize: 'clamp(1.5rem, 4vw, 2rem)',
               fontWeight: 700,
-              marginBottom: '2rem',
+              marginBottom: '1.5rem',
               color: '#1f2937',
             }}
           >
@@ -151,9 +155,10 @@ export default async function Home() {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                gap: '1.5rem',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                gap: '1rem',
               }}
+              className="md:gap-6"
             >
               {popularRecipes.map((recipe) => (
                 <PublicRecipeCard key={recipe.id} recipe={recipe} />

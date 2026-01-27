@@ -9,7 +9,7 @@ export async function Header() {
     <header
       style={{
         borderBottom: '1px solid #e5e7eb',
-        padding: '0.75rem 1.5rem',
+        padding: '0.75rem 1rem',
         background: 'white',
       }}
     >
@@ -21,13 +21,13 @@ export async function Header() {
           alignItems: 'center',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
-          gap: '1rem',
+          gap: '0.75rem',
         }}
       >
         <Link
           href="/"
           style={{
-            fontSize: '1.25rem',
+            fontSize: 'clamp(1rem, 2.5vw, 1.25rem)',
             fontWeight: 700,
             color: '#333',
             textDecoration: 'none',
@@ -35,13 +35,13 @@ export async function Header() {
         >
           Recipe-Kitchen-Share
         </Link>
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+        <nav style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
           {session?.user ? (
             <>
               <Link
                 href="/"
                 style={{
-                  fontSize: '0.9rem',
+                  fontSize: '0.875rem',
                   color: '#555',
                   textDecoration: 'none',
                 }}
@@ -51,7 +51,7 @@ export async function Header() {
               <Link
                 href="/dashboard/profile"
                 style={{
-                  fontSize: '0.9rem',
+                  fontSize: '0.875rem',
                   color: '#555',
                   textDecoration: 'none',
                 }}
@@ -61,7 +61,7 @@ export async function Header() {
               <Link
                 href="/dashboard"
                 style={{
-                  fontSize: '0.9rem',
+                  fontSize: '0.875rem',
                   color: '#555',
                   textDecoration: 'none',
                 }}
@@ -69,10 +69,7 @@ export async function Header() {
                 Мои рецепты
               </Link>
               <span
-                style={{
-                  fontSize: '0.9rem',
-                  color: '#555',
-                }}
+                className="hidden sm:inline text-sm text-slate-600"
                 title={session.user.email ?? ''}
               >
                 {session.user.name || session.user.email}
@@ -86,8 +83,8 @@ export async function Header() {
                 <button
                   type="submit"
                   style={{
-                    padding: '0.4rem 0.9rem',
-                    fontSize: '0.9rem',
+                    padding: '0.4rem 0.75rem',
+                    fontSize: '0.875rem',
                     background: '#ef4444',
                     color: 'white',
                     border: 'none',
@@ -109,8 +106,8 @@ export async function Header() {
               <button
                 type="submit"
                 style={{
-                  padding: '0.4rem 0.9rem',
-                  fontSize: '0.9rem',
+                  padding: '0.4rem 0.75rem',
+                  fontSize: '0.875rem',
                   background: 'rgba(15, 158, 166, 1)',
                   color: 'white',
                   border: 'none',

@@ -47,25 +47,25 @@ export function RecipeTable({ recipes, currentUserId }: RecipeTableProps) {
       <table className="w-full text-left text-sm">
         <thead>
           <tr className="border-b border-slate-200 bg-slate-50/80">
-            <th className="px-4 py-3 font-semibold uppercase tracking-wide text-slate-500">
+            <th className="px-2 md:px-4 py-2 md:py-3 font-semibold uppercase tracking-wide text-slate-500 text-xs md:text-sm">
               Заголовок
             </th>
-            <th className="px-4 py-3 font-semibold uppercase tracking-wide text-slate-500">
+            <th className="hidden md:table-cell px-4 py-3 font-semibold uppercase tracking-wide text-slate-500">
               Описание
             </th>
-            <th className="px-4 py-3 font-semibold uppercase tracking-wide text-slate-500">
+            <th className="hidden lg:table-cell px-4 py-3 font-semibold uppercase tracking-wide text-slate-500">
               Категория
             </th>
-            <th className="px-4 py-3 font-semibold uppercase tracking-wide text-slate-500">
+            <th className="hidden lg:table-cell px-4 py-3 font-semibold uppercase tracking-wide text-slate-500">
               Обновлено
             </th>
-            <th className="px-4 py-3 font-semibold uppercase tracking-wide text-slate-500">
+            <th className="px-2 md:px-4 py-2 md:py-3 font-semibold uppercase tracking-wide text-slate-500 text-xs md:text-sm">
               Статус
             </th>
-            <th className="px-4 py-3 font-semibold uppercase tracking-wide text-slate-500">
+            <th className="px-2 md:px-4 py-2 md:py-3 font-semibold uppercase tracking-wide text-slate-500 text-xs md:text-sm">
               Нравится
             </th>
-            <th className="px-4 py-3 font-semibold uppercase tracking-wide text-slate-500">
+            <th className="px-2 md:px-4 py-2 md:py-3 font-semibold uppercase tracking-wide text-slate-500 text-xs md:text-sm">
               Действия
             </th>
           </tr>
@@ -134,7 +134,7 @@ function RecipeTableRow({
         pending && 'opacity-70'
       )}
     >
-      <td className="px-4 py-3">
+      <td className="px-2 md:px-4 py-2 md:py-3">
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
@@ -150,11 +150,15 @@ function RecipeTableRow({
           <button
             type="button"
             onClick={() => { setOpenInEditMode(false); setViewOpen(true) }}
-            className="text-left font-medium text-slate-900 cursor-pointer hover:underline hover:text-sky-600"
+            className="text-left font-medium text-sm md:text-base text-slate-900 cursor-pointer hover:underline hover:text-sky-600"
             title="Открыть рецепт"
           >
             {r.title}
           </button>
+        </div>
+        <div className="mt-1 md:hidden text-xs text-slate-500">
+          {r.category?.category && <span className="mr-2">Категория: {r.category.category}</span>}
+          <span>Обновлено: {formatDate(r.updatedAt)}</span>
         </div>
         <RecipeViewModal
           recipe={{
@@ -169,16 +173,16 @@ function RecipeTableRow({
           initialMode={openInEditMode ? 'edit' : 'view'}
         />
       </td>
-      <td className="max-w-[200px] px-4 py-3 text-slate-600">
+      <td className="hidden md:table-cell max-w-[200px] px-4 py-3 text-slate-600 text-sm">
         {preview(r.content)}
       </td>
-      <td className="px-4 py-3 text-slate-500">
+      <td className="hidden lg:table-cell px-4 py-3 text-slate-500 text-sm">
         {r.category?.category ?? '—'}
       </td>
-      <td className="px-4 py-3 text-slate-600">
+      <td className="hidden lg:table-cell px-4 py-3 text-slate-600 text-sm">
         {formatDate(r.updatedAt)}
       </td>
-      <td className="px-4 py-3">
+      <td className="px-2 md:px-4 py-2 md:py-3">
         <span
           className={cn(
             'inline-block rounded-md px-2 py-0.5 text-xs font-medium',
@@ -188,7 +192,7 @@ function RecipeTableRow({
           {isPublic ? 'Публичный' : 'Приватный'}
         </span>
       </td>
-      <td className="px-4 py-3">
+      <td className="px-2 md:px-4 py-2 md:py-3">
         {isPublic ? (
           <LikeButton
             recipeId={r.id}
@@ -199,7 +203,7 @@ function RecipeTableRow({
           <span className="text-slate-400">—</span>
         )}
       </td>
-      <td className="px-4 py-3">
+      <td className="px-2 md:px-4 py-2 md:py-3">
         <div className="flex items-center gap-1">
           <Button
             variant="ghost"
