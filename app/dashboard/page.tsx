@@ -72,7 +72,7 @@ export default async function DashboardPage({
           <Suspense fallback={<div className="h-10 w-64 animate-pulse rounded-md bg-slate-100" />}>
             <SearchRecipes className="w-64 min-w-0" />
           </Suspense>
-          <RecipeDialog recipe={null} trigger={<Button>+ Новый рецепт</Button>} />
+          <RecipeDialog recipe={null} trigger={<Button className="bg-sky-500 text-white hover:bg-sky-600 focus-visible:ring-sky-400">+ Новый рецепт</Button>} />
         </div>
         <Suspense fallback={<div className="h-9 w-[180px] animate-pulse rounded-lg bg-slate-100" />}>
           <ViewToggle />
