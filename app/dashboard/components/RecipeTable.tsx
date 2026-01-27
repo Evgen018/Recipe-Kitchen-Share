@@ -1,6 +1,6 @@
 'use client'
 
-import { Pencil, Star, Trash2, Globe, Lock } from 'lucide-react'
+import { Pencil, Star, Trash2, Globe, Lock, Download } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import {
   deleteRecipe,
@@ -114,6 +114,19 @@ function RecipeTableRow({
     startTransition(async () => { await toggleFavorite(r.id) })
   }
 
+  const onDownload = () => {
+    const content = `${r.title}\n\n${r.content}\n\nКатегория: ${r.category?.category ?? '—'}\nОбновлено: ${formatDate(r.updatedAt)}\nСтатус: ${isPublic ? 'Публичный' : 'Приватный'}`
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${r.title.replace(/[^a-zа-яё0-9]/gi, '_')}.txt`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <tr
       className={cn(
@@ -188,6 +201,15 @@ function RecipeTableRow({
       </td>
       <td className="px-4 py-3">
         <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={onDownload}
+            aria-label="Скачать рецепт"
+            title="Скачать рецепт"
+          >
+            <Download className="h-4 w-4 text-slate-500" />
+          </Button>
           {isOwner && (
             <Button
               variant="ghost"

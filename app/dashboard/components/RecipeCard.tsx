@@ -1,6 +1,6 @@
 'use client'
 
-import { Pencil, Star, Trash2, Globe, Lock } from 'lucide-react'
+import { Pencil, Star, Trash2, Globe, Lock, Download } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import {
   deleteRecipe,
@@ -19,6 +19,8 @@ type Recipe = {
   visibility: string
   ownerId: string
   categoryId?: string
+  category?: { category: string } | null
+  updatedAt?: Date
   favoritedBy?: { userId: string }[]
   _count?: { likes: number }
   likes?: { id: string }[]
@@ -65,6 +67,23 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
     })
   }
 
+  const onDownload = () => {
+    const formatDate = (d: Date | undefined) => {
+      if (!d) return '—'
+      return new Date(d).toLocaleDateString('ru-RU')
+    }
+    const content = `${recipe.title}\n\n${recipe.content}\n\nКатегория: ${recipe.category?.category ?? '—'}\nОбновлено: ${formatDate(recipe.updatedAt)}\nСтатус: ${isPublic ? 'Публичный' : 'Приватный'}`
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${recipe.title.replace(/[^a-zа-яё0-9]/gi, '_')}.txt`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
   const showDelete = canDelete && isOwner
 
   return (
@@ -108,6 +127,15 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
             initialCount={likesCount}
           />
         )}
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          onClick={onDownload}
+          aria-label="Скачать рецепт"
+          title="Скачать рецепт"
+        >
+          <Download className="h-4 w-4 text-slate-500" />
+        </Button>
         {isOwner && (
           <Button
             variant="ghost"

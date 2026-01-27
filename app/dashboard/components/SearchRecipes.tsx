@@ -13,7 +13,7 @@ interface SearchRecipesProps {
   className?: string
 }
 
-export function SearchRecipes({ placeholder = 'Поиск по названию и содержанию…', className }: SearchRecipesProps) {
+export function SearchRecipes({ placeholder = 'Поиск по названию', className }: SearchRecipesProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const q = searchParams.get('q') ?? ''
