@@ -22,12 +22,13 @@ async function getOrCreateCategory(categoryName: string) {
   return cat
 }
 
-/** Получить все доступные категории (Напитки, Еда, Десерт) */
+/** Получить все категории (для форм рецептов и выбора). Сначала обеспечиваем наличие базовых. */
 export async function getAvailableCategories() {
-  const categoryNames = ['Напитки', 'Еда', 'Десерт']
-  const categories = await Promise.all(
-    categoryNames.map((name) => getOrCreateCategory(name))
-  )
+  const defaults = ['Напитки', 'Еда', 'Десерт']
+  await Promise.all(defaults.map((name) => getOrCreateCategory(name)))
+  const categories = await prisma.category.findMany({
+    orderBy: { category: 'asc' },
+  })
   return categories
 }
 
