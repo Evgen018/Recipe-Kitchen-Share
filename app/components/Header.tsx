@@ -39,16 +39,6 @@ export async function Header() {
           {session?.user ? (
             <>
               <Link
-                href="/"
-                style={{
-                  fontSize: '0.875rem',
-                  color: '#555',
-                  textDecoration: 'none',
-                }}
-              >
-                Главная
-              </Link>
-              <Link
                 href="/dashboard/profile"
                 style={{
                   fontSize: '0.875rem',

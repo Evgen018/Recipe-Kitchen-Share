@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { FooterPlaceholderLinks } from './FooterPlaceholderLinks'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -38,28 +38,10 @@ export function Footer() {
             gap: '1.5rem',
             flexWrap: 'wrap',
             justifyContent: 'center',
+            position: 'relative',
           }}
         >
-          <Link
-            href="/contacts"
-            style={{
-              fontSize: '0.9rem',
-              color: '#666',
-              textDecoration: 'none',
-            }}
-          >
-            Контакты
-          </Link>
-          <Link
-            href="/about"
-            style={{
-              fontSize: '0.9rem',
-              color: '#666',
-              textDecoration: 'none',
-            }}
-          >
-            О нас
-          </Link>
+          <FooterPlaceholderLinks />
         </nav>
       </div>
     </footer>
