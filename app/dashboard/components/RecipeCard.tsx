@@ -121,7 +121,10 @@ export function RecipeCard({ recipe, currentUserId, canDelete = true }: RecipeCa
           </div>
         </div>
         {recipe.category?.category && (
-          <span className="shrink-0 rounded-md bg-sky-50 px-2.5 py-1 text-sm font-medium text-sky-700">
+          <span
+            className="shrink-0 rounded-md bg-sky-50 px-2.5 py-1 text-sm font-medium text-sky-700"
+            title="Категория"
+          >
             {recipe.category.category}
           </span>
         )}
