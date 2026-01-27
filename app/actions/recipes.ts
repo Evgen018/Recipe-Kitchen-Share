@@ -59,7 +59,7 @@ export async function createRecipe(formData: FormData) {
   })
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/public')
-  revalidateTag('dashboard-public')
+  revalidateTag('dashboard-public', 'max')
   return { ok: true }
 }
 
@@ -95,7 +95,7 @@ export async function updateRecipe(recipeId: string, formData: FormData) {
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/public')
   revalidatePath('/dashboard/favorites')
-  revalidateTag('dashboard-public')
+  revalidateTag('dashboard-public', 'max')
   return { ok: true }
 }
 
@@ -112,7 +112,7 @@ export async function deleteRecipe(recipeId: string) {
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/public')
   revalidatePath('/dashboard/favorites')
-  revalidateTag('dashboard-public')
+  revalidateTag('dashboard-public', 'max')
   return { ok: true }
 }
 
@@ -135,7 +135,7 @@ export async function togglePublic(recipeId: string) {
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/public')
   revalidatePath('/dashboard/favorites')
-  revalidateTag('dashboard-public')
+  revalidateTag('dashboard-public', 'max')
   return { ok: true }
 }
 
@@ -169,7 +169,7 @@ export async function toggleFavorite(recipeId: string) {
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/public')
   revalidatePath('/dashboard/favorites')
-  revalidateTag('dashboard-public')
+  revalidateTag('dashboard-public', 'max')
   return { ok: true }
 }
 

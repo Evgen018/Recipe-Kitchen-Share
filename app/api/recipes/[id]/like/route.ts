@@ -47,7 +47,7 @@ export async function POST(
     revalidatePath('/dashboard')
     revalidatePath('/dashboard/public')
     revalidatePath('/dashboard/favorites')
-    revalidateTag('dashboard-public')
+    revalidateTag('dashboard-public', 'max')
 
     return NextResponse.json({ liked, likesCount })
   } catch {
