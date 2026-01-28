@@ -37,10 +37,16 @@ export function SearchRecipes({ placeholder, className }: SearchRecipesProps) {
     [router, searchParams]
   )
 
+  // Вызывать apply только когда пользователь изменил поле относительно URL (q),
+  // иначе при переходе на page=2 компонент монтируется заново и через 300ms
+  // сбрасывает URL на первую страницу.
   useEffect(() => {
+    const trimmedValue = value.trim()
+    const trimmedQ = q.trim()
+    if (trimmedValue === trimmedQ) return
     const t = setTimeout(() => apply(value), DEBOUNCE_MS)
     return () => clearTimeout(t)
-  }, [value, apply])
+  }, [value, q, apply])
 
   return (
     <div className={cn('relative', className)}>

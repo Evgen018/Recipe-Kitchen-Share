@@ -1,11 +1,10 @@
 import type { Locale } from '@/lib/i18n'
-import { FooterPlaceholderLinks } from './FooterPlaceholderLinks'
 
 type T = (key: string) => string
 
 type Props = { locale: Locale; t: T }
 
-export function Footer({ locale, t }: Props) {
+export function Footer({ locale: _locale, t: _t }: Props) {
   const currentYear = new Date().getFullYear()
 
   return (
@@ -35,19 +34,8 @@ export function Footer({ locale, t }: Props) {
             textAlign: 'center',
           }}
         >
-          © {currentYear} Recipe-Kitchen-Share
+          Copyright © {currentYear} Recipe-Kitchen-Share
         </div>
-        <nav
-          style={{
-            display: 'flex',
-            gap: '1.5rem',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            position: 'relative',
-          }}
-        >
-          <FooterPlaceholderLinks />
-        </nav>
       </div>
     </footer>
   )
