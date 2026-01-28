@@ -1,0 +1,12 @@
+Set-Content "$dest\.cursorindexingignore" @"
+node_modules/
+.next/
+.prisma/
+dist/
+build/
+coverage/
+.cache/
+tmp/
+temp/
+.git/
+"@
